@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:backdrop/backdrop.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Wörldle',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Wörldle'),
     );
   }
 }
@@ -40,11 +41,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BackdropScaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: const <Widget>[
+          BackdropToggleButton(
+            icon: AnimatedIcons.list_view,
+          )
+        ],
       ),
-      body: Center(
+      frontLayer: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -58,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      backLayer: const Center(child: Text("Back Layer ist hier zu finden!")),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
