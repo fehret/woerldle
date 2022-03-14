@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
+      //Spiel
       frontLayer: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -64,7 +65,30 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      backLayer: const Center(child: Text("Back Layer ist hier zu finden!")),
+      //Menü
+      backLayer: Scaffold(
+        backgroundColor: Color.fromARGB(255, 116, 200, 248),
+        body: SizedBox.expand(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(20.0) ,
+                  child: Text("Menü",
+                  style: TextStyle(fontSize: 20)
+                  )
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 20, bottom: 10),
+                  child : ElevatedButton(
+                    style: ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20), primary: Color.fromARGB(255, 0, 26, 255)),
+                    onPressed: () {}, //TODO: WAS SOLL PASSIEREN?
+                    child: const Text("Einstellungen") ,
+                  )
+                )
+              ],
+            )
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
