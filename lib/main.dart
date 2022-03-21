@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
+import 'package:woerldle/pages/achievements.dart';
+import 'package:woerldle/pages/game.dart';
+import 'package:woerldle/pages/login.dart';
+import 'pages/settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +21,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Wörldle'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -31,69 +36,73 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _pageIndex = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final List<Widget> pages = [
+    const GamePage(),
+    const AchievementsPage(),
+    const SettingsPage(),
+    const LoginPage()
+  ];
+
+  Widget getBackLayer() => BackdropNavigationBackLayer(
+          items: const [
+            ListTile(
+              leading: Icon(Icons.gamepad_outlined),
+              title: Text("Game"),
+            ),
+            ListTile(
+              leading: Icon(Icons.check),
+              title: Text("Achievements"),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text("Settings"),
+            )
+          ],
+          onTap: (int pos) => {setState(() => _pageIndex = pos)},
+          separatorBuilder: (context, position) => const Divider());
 
   @override
   Widget build(BuildContext context) {
     return BackdropScaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: const <Widget>[
-          BackdropToggleButton(
-            icon: AnimatedIcons.list_view,
-          )
+        leading: const BackdropToggleButton(
+          icon: AnimatedIcons.close_menu,
+        ),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () =>
+                  {setState((() => _pageIndex = pages.length - 1))},
+              icon: const Icon(Icons.person))
         ],
       ),
       //Spiel
-      frontLayer: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      frontLayer: pages[_pageIndex],
+      //Menü
+      backLayer: getBackLayer(),
+
+      /*Scaffold(
+        backgroundColor: const Color.fromARGB(255, 116, 200, 248),
+        body: Column(
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            Container(
+                margin: const EdgeInsets.all(20.0),
+                child: const Text("Menü", style: TextStyle(fontSize: 20))),
+            const Divider(),
+            Container(
+                margin: const EdgeInsets.only(top: 20, bottom: 10),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 20),
+                      primary: const Color.fromARGB(255, 0, 26, 255)),
+                  onPressed: () {}, //TODO: WAS SOLL PASSIEREN?
+                  child: const Text("Einstellungen"),
+                ))
           ],
         ),
-      ),
-      //Menü
-      backLayer: Scaffold(
-        backgroundColor: Color.fromARGB(255, 116, 200, 248),
-        body: SizedBox.expand(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.all(20.0) ,
-                  child: Text("Menü",
-                  style: TextStyle(fontSize: 20)
-                  )
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 20, bottom: 10),
-                  child : ElevatedButton(
-                    style: ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20), primary: Color.fromARGB(255, 0, 26, 255)),
-                    onPressed: () {}, //TODO: WAS SOLL PASSIEREN?
-                    child: const Text("Einstellungen") ,
-                  )
-                )
-              ],
-            )
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      ),*/
     );
   }
 }
