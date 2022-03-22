@@ -19,6 +19,8 @@ class GamePage extends StatefulWidget {
   // aber bisher noch nicht geändert)
   //-------------------------------------
   List<Country> guesses = [];
+  bool reGen = true;
+  int toGuess = -1;
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -38,7 +40,7 @@ class _GamePageState extends State<GamePage>
   // Spielmechanik notwendig sind
   //------------------------------
   late Future<List<Country>> countries;
-  int toGuess = 0;
+  late int toGuess;
 
   //------------------------------
   // Variablen für Autocompletion
@@ -87,6 +89,10 @@ class _GamePageState extends State<GamePage>
     return matches;
   }
 
+  testprint() {
+    print(widget.reGen);
+  }
+
   //------------------------------
   // wird immer bei Aufbau der
   // Seite aufgerufen, läd hier
@@ -96,14 +102,7 @@ class _GamePageState extends State<GamePage>
   void initState() {
     super.initState();
     countries = loadCountries();
-  }
-
-  //-------------------------------
-  // lädt Preferences und versucht,
-  // bool zu laden, wählt sonst std
-  //-------------------------------
-  Future<bool?> getGenerate() {
-    return _prefs.then((value) => value.getBool('generateNew'));
+    testprint();
   }
 
   @override
@@ -143,173 +142,141 @@ class _GamePageState extends State<GamePage>
                 key: (element) => element.name,
                 value: (element) => element);
 
-            return FutureBuilder(
-                //--------------------------------
-                // fragt ab, ob neues Land gezogen
-                // werden soll
-                //--------------------------------
-                future: getGenerate(),
-                builder:
-                    (BuildContext contextInner, AsyncSnapshot snapshotInner) {
-                  if (snapshotInner.hasError) {
-                    return Center(child: Text("Error: ${snapshotInner.error}"));
-                  } else if (snapshotInner.hasData) {
-                    //----------------------------------
-                    // generiere neuen Index, wenn nötig
-                    //----------------------------------
-                    bool reGen = snapshotInner.data;
-                    if (reGen) {
-                      toGuess = Random().nextInt(countriesReceived.length);
-                      //------------------------------
-                      // setzt Einstellung auf false
-                      //------------------------------
-                      _prefs.then((SharedPreferences prefs) {
-                        return prefs.setBool('generateNew', false);
-                      });
-                    }
+            if (widget.reGen) {
+              widget.toGuess = Random().nextInt(countriesReceived.length);
+              //------------------------------
+              // setzt Einstellung auf false
+              //------------------------------
+              widget.reGen = false;
+            }
 
-                    //--------------------------------
-                    // checkt auf Gewinn oder Verlust
-                    // gibt entsprechendes Layout aus
-                    // lose noch auf 2, sonst Probleme
-                    //--------------------------------
-                    if (widget.guesses.isNotEmpty &&
-                        widget.guesses.last == countriesReceived[toGuess]) {
-                      return winPage(widget.guesses);
-                    } else if (widget.guesses.length > 2) {
-                      return losePage(
-                          countriesReceived[toGuess], widget.guesses);
-                    } else {
-                      //------------------------------
-                      // Rate-Seite des Spiels
-                      //------------------------------
-                      return Column(
-                        children: [
-                          //------------------------------
-                          // nur als Dev-Hilfe,
-                          //  zeigt Lösung an
-                          //------------------------------
-                          Card(
-                            child: ListTile(
-                              title:
-                                  Text(countriesReceived[toGuess].toString()),
-                            ),
-                          ),
-                          //------------------------------
-                          // beigetätigten Versuchen,
-                          // diese zeichnen, ansonsten
-                          // Text-Widget
-                          //------------------------------
-                          (widget.guesses.isNotEmpty)
-                              ? Column(
-                                  children: widget.guesses.map<Widget>((e) {
-                                    double angle = e.getInitialBearing(
-                                        countriesReceived[toGuess].coords);
+            //--------------------------------
+            // checkt auf Gewinn oder Verlust
+            // gibt entsprechendes Layout aus
+            // lose noch auf 2, sonst Probleme
+            //--------------------------------
+            if (widget.guesses.isNotEmpty &&
+                widget.guesses.last == countriesReceived[widget.toGuess]) {
+              return winPage(widget.guesses);
+            } else if (widget.guesses.length > 2) {
+              return losePage(
+                  countriesReceived[widget.toGuess], widget.guesses);
+            } else {
+              //------------------------------
+              // Rate-Seite des Spiels
+              //------------------------------
+              return Column(
+                children: [
+                  //------------------------------
+                  // nur als Dev-Hilfe,
+                  //  zeigt Lösung an
+                  //------------------------------
+                  Card(
+                    child: ListTile(
+                      title: Text(countriesReceived[widget.toGuess].toString()),
+                    ),
+                  ),
+                  //------------------------------
+                  // beigetätigten Versuchen,
+                  // diese zeichnen, ansonsten
+                  // Text-Widget
+                  //------------------------------
+                  (widget.guesses.isNotEmpty)
+                      ? Column(
+                          children: widget.guesses.map<Widget>((e) {
+                            double angle = e.getInitialBearing(
+                                countriesReceived[widget.toGuess].coords);
 
-                                    double distance = e.getDistanceByCountry(
-                                        countriesReceived[toGuess]);
-                                    Widget arrow = Transform.rotate(
-                                      angle: angle,
-                                      child: const Icon(Icons.arrow_upward),
-                                    );
-                                    return Card(
-                                      child: ListTile(
-                                        leading:
-                                            arrow, //&Text(angle.toString()),
-                                        title: Text(
-                                          e.name,
-                                          style: TextStyle(
-                                            color: (distance < 3000)
-                                                ? Colors.greenAccent
-                                                : Colors.redAccent,
-                                          ),
-                                        ),
-                                        trailing: Text(distance.toString()),
-                                      ),
-                                    );
-                                  }).toList(),
-                                )
-                              : const Text("Noch nichts geraten!"),
-                          //------------------------------
-                          // Füllt Screen größtmöglich aus
-                          //------------------------------
-                          const Spacer(),
-                          //------------------------------
-                          // Eingabe mit Autocompletion
-                          //------------------------------
-                          Form(
-                            key: _formKey,
-                            child: Padding(
-                              padding: const EdgeInsets.all(32.0),
-                              child: Column(
-                                children: <Widget>[
-                                  const Text(
-                                      'Welches Land willst du versuchen?'),
-                                  TypeAheadFormField(
-                                    //------------------------------
-                                    // vielleicht eigenes Keyboard?
-                                    //------------------------------
-                                    //hideKeyboard: true,
-                                    textFieldConfiguration:
-                                        TextFieldConfiguration(
-                                      decoration: const InputDecoration(
-                                          labelText: 'Land'),
-                                      controller: _typeAheadController,
-                                    ),
-                                    suggestionsCallback: (pattern) {
-                                      return getSuggestions(
-                                          pattern, countriesReceived);
-                                    },
-                                    itemBuilder: (context, String suggestion) {
-                                      return ListTile(
-                                        title: Text(suggestion),
-                                      );
-                                    },
-                                    transitionBuilder:
-                                        (context, suggestionsBox, controller) {
-                                      return suggestionsBox;
-                                    },
-                                    onSuggestionSelected: (String suggestion) {
-                                      _typeAheadController.text = suggestion;
-                                    },
-                                    validator: (value) => value!.isEmpty
-                                        ? 'Bitte wähle ein Land'
-                                        : null,
-                                    onSaved: (value) =>
-                                        _selectedCountry = value,
+                            double distance = e.getDistanceByCountry(
+                                countriesReceived[widget.toGuess]);
+                            Widget arrow = Transform.rotate(
+                              angle: angle,
+                              child: const Icon(Icons.arrow_upward),
+                            );
+                            return Card(
+                              child: ListTile(
+                                leading: arrow, //&Text(angle.toString()),
+                                title: Text(
+                                  e.name,
+                                  style: TextStyle(
+                                    color: (distance < 3000)
+                                        ? Colors.greenAccent
+                                        : Colors.redAccent,
                                   ),
-                                  const SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  ElevatedButton(
-                                    child: const Text('Prüfen'),
-                                    onPressed: () {
-                                      if (_formKey.currentState!.validate()) {
-                                        _formKey.currentState!.save();
-                                        setState(() {
-                                          widget.guesses.add(
-                                              name2Country[_selectedCountry]!);
-                                          _selectedCountry = "";
-                                          _typeAheadController.text = "";
-                                        });
-                                      }
-                                    },
-                                  )
-                                ],
+                                ),
+                                trailing: Text(distance.toString()),
                               ),
+                            );
+                          }).toList(),
+                        )
+                      : const Text("Noch nichts geraten!"),
+                  //------------------------------
+                  // Füllt Screen größtmöglich aus
+                  //------------------------------
+                  const Spacer(),
+                  //------------------------------
+                  // Eingabe mit Autocompletion
+                  //------------------------------
+                  Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        children: <Widget>[
+                          const Text('Welches Land willst du versuchen?'),
+                          TypeAheadFormField(
+                            //------------------------------
+                            // vielleicht eigenes Keyboard?
+                            //------------------------------
+                            //hideKeyboard: true,
+                            textFieldConfiguration: TextFieldConfiguration(
+                              decoration:
+                                  const InputDecoration(labelText: 'Land'),
+                              controller: _typeAheadController,
                             ),
+                            suggestionsCallback: (pattern) {
+                              return getSuggestions(pattern, countriesReceived);
+                            },
+                            itemBuilder: (context, String suggestion) {
+                              return ListTile(
+                                title: Text(suggestion),
+                              );
+                            },
+                            transitionBuilder:
+                                (context, suggestionsBox, controller) {
+                              return suggestionsBox;
+                            },
+                            onSuggestionSelected: (String suggestion) {
+                              _typeAheadController.text = suggestion;
+                            },
+                            validator: (value) =>
+                                value!.isEmpty ? 'Bitte wähle ein Land' : null,
+                            onSaved: (value) => _selectedCountry = value,
                           ),
+                          const SizedBox(
+                            height: 10.0,
+                          ),
+                          ElevatedButton(
+                            child: const Text('Prüfen'),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                setState(() {
+                                  widget.guesses
+                                      .add(name2Country[_selectedCountry]!);
+                                  _selectedCountry = "";
+                                  _typeAheadController.text = "";
+                                });
+                              }
+                            },
+                          )
                         ],
-                      );
-                    }
-                    //------------------------------------
-                    // sollten noch keine Daten vorliegen,
-                    // wird Ladeindicator angezeigt
-                    //------------------------------------
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                });
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
           } else {
             return const CircularProgressIndicator();
           }
@@ -383,11 +350,9 @@ class _GamePageState extends State<GamePage>
                 IconButton(
                     onPressed: () {
                       setState(() {
-                        toGuess = -1;
+                        widget.toGuess = -1;
                         guesses.clear();
-                        _prefs.then((SharedPreferences prefs) {
-                          return prefs.setBool('generateNew', true);
-                        });
+                        widget.reGen = true;
                       });
                     },
                     icon: const Icon(Icons.play_circle_filled))
@@ -457,11 +422,9 @@ class _GamePageState extends State<GamePage>
                 IconButton(
                     onPressed: () {
                       setState(() {
-                        toGuess = -1;
+                        widget.toGuess = -1;
                         guesses.clear();
-                        _prefs.then((SharedPreferences prefs) {
-                          return prefs.setBool('generateNew', true);
-                        });
+                        widget.reGen = true;
                       });
                     },
                     icon: const Icon(Icons.play_circle_filled))
