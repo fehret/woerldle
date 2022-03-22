@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Wörldle',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: const MyHomePage(title: 'Wörldle'),
       debugShowCheckedModeBanner: false,
@@ -38,13 +38,20 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _pageIndex = 0;
 
+  //------------------------------------
+  // Liste der Seiten für die Navigation
+  //------------------------------------
   final List<Widget> pages = [
-    const GamePage(),
+    GamePage(),
     const AchievementsPage(),
     const SettingsPage(),
     const LoginPage()
   ];
 
+  //--------------------------------------------------
+  // Funktion gibt Backlayer als Widget zurück
+  // Änderung bzgl. Design müssen hier getätigt werden
+  //--------------------------------------------------
   Widget getBackLayer() => BackdropNavigationBackLayer(
           items: const [
             ListTile(
@@ -60,29 +67,45 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text("Settings"),
             )
           ],
+          //---------------------------------
+          // setzt dementsprechend den Index
+          //---------------------------------
           onTap: (int pos) => {setState(() => _pageIndex = pos)},
           separatorBuilder: (context, position) => const Divider());
 
   @override
   Widget build(BuildContext context) {
     return BackdropScaffold(
-      appBar: AppBar(
+      appBar: BackdropAppBar(
         title: Text(widget.title),
         leading: const BackdropToggleButton(
           icon: AnimatedIcons.close_menu,
         ),
         actions: <Widget>[
+          //------------------------------------------
+          // Profil-Button
+          //  Profilseite sollte immer die letzte sein
+          //------------------------------------------
           IconButton(
               onPressed: () =>
                   {setState((() => _pageIndex = pages.length - 1))},
               icon: const Icon(Icons.person))
         ],
       ),
-      //Spiel
+
+      //------------------------------------
+      // Front-Layer zeigt gewählte Seite an
+      //------------------------------------
       frontLayer: pages[_pageIndex],
-      //Menü
+
+      //----------------------------------
+      // Backlayer wird prozedural erzeugt
+      //---------------------------------- 
       backLayer: getBackLayer(),
 
+      //-----------------------
+      // altes Programm, nötig?
+      //-----------------------
       /*Scaffold(
         backgroundColor: const Color.fromARGB(255, 116, 200, 248),
         body: Column(

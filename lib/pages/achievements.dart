@@ -10,6 +10,8 @@ class AchievementsPage extends StatefulWidget {
 class _AchievementsPageState extends State<AchievementsPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(child: const Text("Acievements"),);
+    return Container(
+      child: const Center(child: Text("Achievements")),
+    );
   }
 }
