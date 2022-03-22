@@ -286,7 +286,7 @@ class _GamePageState extends State<GamePage>
   }
 
   //-----------------------------------
-  // gitb Gewinnseite als Widget zurück
+  // gibt Gewinnseite als Widget zurück
   //-----------------------------------
   Widget winPage(List<Country> guesses) {
     Country result = guesses.last;
