@@ -103,29 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
       //---------------------------------- 
       backLayer: getBackLayer(),
 
-      //-----------------------
-      // altes Programm, nötig?
-      //-----------------------
-      /*Scaffold(
-        backgroundColor: const Color.fromARGB(255, 116, 200, 248),
-        body: Column(
-          children: <Widget>[
-            Container(
-                margin: const EdgeInsets.all(20.0),
-                child: const Text("Menü", style: TextStyle(fontSize: 20))),
-            const Divider(),
-            Container(
-                margin: const EdgeInsets.only(top: 20, bottom: 10),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 20),
-                      primary: const Color.fromARGB(255, 0, 26, 255)),
-                  onPressed: () {}, //TODO: WAS SOLL PASSIEREN?
-                  child: const Text("Einstellungen"),
-                ))
-          ],
-        ),
-      ),*/
     );
   }
 }
