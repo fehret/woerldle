@@ -73,11 +73,22 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: (int pos) => {setState(() => _pageIndex = pos)},
           separatorBuilder: (context, position) => const Divider());
 
+  //Grundstruktur der Applikation
+  //Auf der Seiten werden alle Seiten geladen
   @override
   Widget build(BuildContext context) {
     return BackdropScaffold(
       appBar: BackdropAppBar(
-        title: Text(widget.title),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(widget.title),
+            Container(
+              margin: const EdgeInsets.only(left:5.0),
+              child: const Icon(Icons.travel_explore),
+            ),
+          ]
+        ),
         leading: const BackdropToggleButton(
           icon: AnimatedIcons.close_menu,
         ),
