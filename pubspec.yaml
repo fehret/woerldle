@@ -17,6 +17,9 @@ dependencies:
   latlong2: ^0.8.1
   flutter_typeahead: ^3.2.4
   shared_preferences: ^2.0.13
+  flutter_polyline_points: ^1.0.0
+  flutter_map: ^0.14.0
+  geojson: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -28,4 +31,5 @@ flutter:
   assets:
     - assets/countries.json
     - assets/countries.geojson
+    - assets/countries/
   uses-material-design: true

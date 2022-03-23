@@ -8,6 +8,10 @@ import 'dart:collection';
 import 'package:woerldle/models/country.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geojson/geojson.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
 
 class GamePage extends StatefulWidget {
   GamePage({Key? key}) : super(key: key);
@@ -173,47 +177,12 @@ class _GamePageState extends State<GamePage>
                   //------------------------------
                   Card(
                     child: ListTile(
+                      //title: CustomPaint(
+                      //  painter: CustomPainter()
+                      //)
                       title: Text(countriesReceived[widget.toGuess].toString()),
                     ),
                   ),
-                  //------------------------------
-                  // beigetätigten Versuchen,
-                  // diese zeichnen, ansonsten
-                  // Text-Widget
-                  //------------------------------
-                  (widget.guesses.isNotEmpty)
-                      ? Column(
-                          children: widget.guesses.map<Widget>((e) {
-                            double angle = e.getInitialBearing(
-                                countriesReceived[widget.toGuess].coords);
-
-                            double distance = e.getDistanceByCountry(
-                                countriesReceived[widget.toGuess]);
-                            Widget arrow = Transform.rotate(
-                              angle: angle,
-                              child: const Icon(Icons.arrow_upward),
-                            );
-                            return Card(
-                              child: ListTile(
-                                leading: arrow, //&Text(angle.toString()),
-                                title: Text(
-                                  e.name,
-                                  style: TextStyle(
-                                    color: (distance < 3000)
-                                        ? Colors.greenAccent
-                                        : Colors.redAccent,
-                                  ),
-                                ),
-                                trailing: Text(distance.toString()),
-                              ),
-                            );
-                          }).toList(),
-                        )
-                      : const Text("Noch nichts geraten!"),
-                  //------------------------------
-                  // Füllt Screen größtmöglich aus
-                  //------------------------------
-                  const Spacer(),
                   //------------------------------
                   // Eingabe mit Autocompletion
                   //------------------------------
@@ -223,7 +192,7 @@ class _GamePageState extends State<GamePage>
                       padding: const EdgeInsets.all(32.0),
                       child: Column(
                         children: <Widget>[
-                          const Text('Welches Land willst du versuchen?'),
+                          const Text('Wessen Grenzen werden dargestellt?'),
                           TypeAheadFormField(
                             //------------------------------
                             // vielleicht eigenes Keyboard?
@@ -274,7 +243,45 @@ class _GamePageState extends State<GamePage>
                       ),
                     ),
                   ),
-                ],
+                  //------------------------------
+                  // beigetätigten Versuchen,
+                  // diese zeichnen, ansonsten
+                  // Text-Widget
+                  //------------------------------
+                  (widget.guesses.isNotEmpty)
+                      ? Column(
+                          children: widget.guesses.map<Widget>((e) {
+                            double angle = e.getInitialBearing(
+                                countriesReceived[widget.toGuess].coords);
+
+                            double distance = e.getDistanceByCountry(
+                                countriesReceived[widget.toGuess]);
+                            Widget arrow = Transform.rotate(
+                              angle: angle,
+                              child: const Icon(Icons.arrow_upward),
+                            );
+                            return Card(
+                              child: ListTile(
+                                leading: arrow, //&Text(angle.toString()),
+                                title: Text(
+                                  e.name,
+                                  style: TextStyle(
+                                    color: (distance < 3000)
+                                        ? Colors.greenAccent
+                                        : Colors.redAccent,
+                                  ),
+                                ),
+                                trailing: Text(distance.toString()),
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      : const Text("Noch nichts geraten!"),
+                  //------------------------------
+                  // Füllt Screen größtmöglich aus
+                  //------------------------------
+                  const Spacer(),
+                 ],
               );
             }
           } else {
