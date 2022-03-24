@@ -12,9 +12,10 @@ class Country {
   // Eigenschaften und Konstruktor
   //------------------------------
   String name;
+  String short;
   LatLng coords;
 
-  Country(this.name, this.coords);
+  Country(this.name, this.coords, this.short);
 
   //-------------------------------
   // ermöglicht Init aus JSON
@@ -23,8 +24,12 @@ class Country {
   factory Country.fromJSON(dynamic json) {
     List coords = List.from(json['latlng']);
 
-    return Country(json['name']['common'] as String,
-        LatLng(coords[0].toDouble(), coords[1].toDouble()));
+    return 
+        Country(
+          json['name']['common'] as String,
+          LatLng(coords[0].toDouble(), coords[1].toDouble()),
+          json['cca2'] as String
+        );
   }
 
   //------------------------------

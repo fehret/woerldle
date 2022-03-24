@@ -10,6 +10,8 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geojson/geojson.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:flutter/services.dart' show rootBundle;
 
 
@@ -169,18 +171,25 @@ class _GamePageState extends State<GamePage>
               //------------------------------
               // Rate-Seite des Spiels
               //------------------------------
+              String assetname = "assets/svg/${countriesReceived[widget.toGuess].short.toLowerCase()}.svg";
+              print(assetname);
               return Column(
                 children: [
                   //------------------------------
                   // nur als Dev-Hilfe,
                   //  zeigt Lösung an
                   //------------------------------
-                  Card(
-                    child: ListTile(
-                      //title: CustomPaint(
-                      //  painter: CustomPainter()
-                      //)
-                      title: Text(countriesReceived[widget.toGuess].toString()),
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    height: 200,
+                    child: Card(
+                      margin: const EdgeInsets.all(3),
+                      child: SvgPicture.asset(
+                        assetname,
+                        color: Colors.red,
+                        alignment: Alignment.center,
+                        fit: BoxFit.scaleDown,
+                      ),
                     ),
                   ),
                   //------------------------------
@@ -192,7 +201,7 @@ class _GamePageState extends State<GamePage>
                       padding: const EdgeInsets.all(32.0),
                       child: Column(
                         children: <Widget>[
-                          const Text('Wessen Grenzen werden dargestellt?'),
+                          const Text('Welches Land wird dargestellt?'),
                           TypeAheadFormField(
                             //------------------------------
                             // vielleicht eigenes Keyboard?
@@ -244,7 +253,7 @@ class _GamePageState extends State<GamePage>
                     ),
                   ),
                   //------------------------------
-                  // beigetätigten Versuchen,
+                  // bei getätigten Versuchen,
                   // diese zeichnen, ansonsten
                   // Text-Widget
                   //------------------------------

@@ -20,6 +20,7 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   flutter_map: ^0.14.0
   geojson: ^1.0.0
+  flutter_svg: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -32,4 +33,5 @@ flutter:
     - assets/countries.json
     - assets/countries.geojson
     - assets/countries/
+    - assets/svg/
   uses-material-design: true
