@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:collection';
 import 'package:woerldle/models/country.dart';
+import 'package:woerldle/models/customCard.dart';
+import 'package:woerldle/models/guessColumn.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geojson/geojson.dart';
@@ -131,7 +133,7 @@ class _GamePageState extends State<GamePage>
       //------------------------------
       child: FutureBuilder(
         // key wird für AnimatedSwitcher genutzt
-        key: ValueKey<int>(widget.guesses.length),
+        //key: ValueKey<int>(widget.guesses.length),
         future: countries,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasError) {
@@ -164,34 +166,36 @@ class _GamePageState extends State<GamePage>
             if (widget.guesses.isNotEmpty &&
                 widget.guesses.last == countriesReceived[widget.toGuess]) {
               return winPage(widget.guesses);
-            } else if (widget.guesses.length > 2) {
+            } else if (widget.guesses.length > 4) {
               return losePage(
                   countriesReceived[widget.toGuess], widget.guesses);
             } else {
               //------------------------------
               // Rate-Seite des Spiels
               //------------------------------
-              String assetname = "assets/svg/${countriesReceived[widget.toGuess].short.toLowerCase()}.svg";
-              print(assetname);
+              
               return Column(
                 children: [
                   //------------------------------
                   // nur als Dev-Hilfe,
                   //  zeigt Lösung an
                   //------------------------------
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    height: 200,
-                    child: Card(
-                      margin: const EdgeInsets.all(3),
-                      child: SvgPicture.asset(
-                        assetname,
+                    //margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    //TODO: Whitespaces für die svg stimmen nicht
+                    Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.fromLTRB(5, 15, 5, 15),
+                      child: SizedBox(
+                        height: 150,
+                        child: SvgPicture.asset(
+                        "assets/svg/${countriesReceived[widget.toGuess].short.toLowerCase()}.svg",
                         color: Colors.red,
                         alignment: Alignment.center,
                         fit: BoxFit.scaleDown,
+                        //height: 140,
+                        ),
                       ),
                     ),
-                  ),
                   //------------------------------
                   // Eingabe mit Autocompletion
                   //------------------------------
@@ -257,39 +261,11 @@ class _GamePageState extends State<GamePage>
                   // diese zeichnen, ansonsten
                   // Text-Widget
                   //------------------------------
-                  (widget.guesses.isNotEmpty)
-                      ? Column(
-                          children: widget.guesses.map<Widget>((e) {
-                            double angle = e.getInitialBearing(
-                                countriesReceived[widget.toGuess].coords);
-
-                            double distance = e.getDistanceByCountry(
-                                countriesReceived[widget.toGuess]);
-                            Widget arrow = Transform.rotate(
-                              angle: angle,
-                              child: const Icon(Icons.arrow_upward),
-                            );
-                            return Card(
-                              child: ListTile(
-                                leading: arrow, //&Text(angle.toString()),
-                                title: Text(
-                                  e.name,
-                                  style: TextStyle(
-                                    color: (distance < 3000)
-                                        ? Colors.greenAccent
-                                        : Colors.redAccent,
-                                  ),
-                                ),
-                                trailing: Text(distance.toString()),
-                              ),
-                            );
-                          }).toList(),
-                        )
-                      : const Text("Noch nichts geraten!"),
+                  guessColumn(widget.guesses, countriesReceived[widget.toGuess], false),
                   //------------------------------
                   // Füllt Screen größtmöglich aus
                   //------------------------------
-                  const Spacer(),
+                  //const Spacer(),
                  ],
               );
             }
@@ -323,23 +299,7 @@ class _GamePageState extends State<GamePage>
           ),
         ),
         const Spacer(),
-        Column(
-          children:
-              guesses.getRange(0, guesses.length - 1).toList().map<Widget>((e) {
-            double angle = e.getInitialBearing(result.coords);
-            Widget arrow = Transform.rotate(
-              angle: angle,
-              child: const Icon(Icons.arrow_upward),
-            );
-            return Card(
-              child: ListTile(
-                leading: arrow, //&Text(angle.toString()),
-                title: Text(e.name),
-                trailing: Text(e.getDistanceByCountry(result).toString()),
-              ),
-            );
-          }).toList(),
-        ),
+        guessColumn(guesses, result, true),
         const Spacer(),
         Row(
           children: [
@@ -387,32 +347,20 @@ class _GamePageState extends State<GamePage>
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Container(
+          margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: const Text(
           "Leider falsch!",
           style: TextStyle(color: Colors.red, fontSize: 40.0),
+          ),
         ),
         Card(
           child: ListTile(
-            leading: const Icon(Icons.location_on), //&Text(angle.toString()),
+            leading: const Icon(Icons.location_on),
             title: Text(result.name),
           ),
         ),
-        Column(
-          children: guesses.map<Widget>((e) {
-            double angle = e.getInitialBearing(result.coords);
-            Widget arrow = Transform.rotate(
-              angle: angle,
-              child: const Icon(Icons.arrow_upward),
-            );
-            return Card(
-              child: ListTile(
-                leading: arrow, //&Text(angle.toString()),
-                title: Text(e.name),
-                trailing: Text(e.getDistanceByCountry(result).toString()),
-              ),
-            );
-          }).toList(),
-        ),
+        guessColumn(guesses, result, false),
         Row(
           children: [
             const SizedBox(
