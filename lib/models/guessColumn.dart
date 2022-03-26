@@ -12,12 +12,9 @@ Column guessColumn(List<Country> guesses, Country countryToGuess, bool win){
       double angle = currCountry.getInitialBearing(
           countryToGuess.coords);
       
-      int dir = (((angle+pi)/(pi/4)).abs() - 0.5).round();
-      print("angle: " + angle.toString());
-      print("dir: " + dir.toString());
-      String direction = ["S","SW","W","NW","N","NE","E","SE"][dir];
-      double distance = currCountry.getDistanceByCountry(
-          countryToGuess);
+      int dir = (((angle+(15/16)*pi)/(pi/4)).abs()).round();
+      String direction = ["S","SW","W","NW","N","NE","E","SE","S"][dir];
+      double distance = currCountry.getDistanceByCountry(countryToGuess);
     Widget arrow = 
       Transform.rotate(
         angle: angle,
@@ -25,11 +22,14 @@ Column guessColumn(List<Country> guesses, Country countryToGuess, bool win){
       );
       int green;
       int red;
-      if(10500 > distance){
+      if(5250 > distance){
         green = 255;
-        red = (distance*255/10500).round();
+        red = (distance*255/5250).round();
+      }else if(15500 > distance){
+        green = ((10500/(distance+1))*510-340).round();
+        red = 255;
       }else{
-        green = ((10500/(distance+1))*510-255).round();
+        green = 0;
         red = 255;
       }
       Color disColor = Color.fromARGB(255, red, green, 0);

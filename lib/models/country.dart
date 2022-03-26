@@ -1,7 +1,4 @@
 import 'package:latlong2/latlong.dart';
-import 'package:geojson/geojson.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'dart:math';
 
 //------------------------------
@@ -14,8 +11,9 @@ class Country {
   String name;
   String short;
   LatLng coords;
+  num area;
 
-  Country(this.name, this.coords, this.short);
+  Country(this.name, this.coords, this.short, this.area);
 
   //-------------------------------
   // ermöglicht Init aus JSON
@@ -28,7 +26,8 @@ class Country {
         Country(
           json['name']['common'] as String,
           LatLng(coords[0].toDouble(), coords[1].toDouble()),
-          json['cca2'] as String
+          json['cca2'].toLowerCase() as String,
+          json['area'],
         );
   }
 
@@ -37,11 +36,11 @@ class Country {
   // und anderes Land
   //------------------------------
   double getDistanceByCoords(LatLng other) {
-    return Distance().as(LengthUnit.Kilometer, coords, other);
+    return const Distance().as(LengthUnit.Kilometer, coords, other);
   }
 
   double getDistanceByCountry(Country other) {
-    return Distance().as(LengthUnit.Kilometer, coords, other.coords);
+    return const Distance().as(LengthUnit.Kilometer, coords, other.coords);
   }
 
   //-----------------------------------
@@ -74,7 +73,7 @@ class Country {
 
   @override
   String toString() {
-    return '{ ${this.name}, ${this.coords}}';
+    return '{ $name, $coords}';
   }
 
 }

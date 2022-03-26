@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woerldle/models/country.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:woerldle/models/imageTheme.dart';
+
 
 Card customCard(Widget arrow, String direction, Color disColor, Country currCountry, double distance){
   return Card(
@@ -10,7 +11,7 @@ Card customCard(Widget arrow, String direction, Color disColor, Country currCoun
         //borderRadius: BorderRadius.circular(30), TODO: Will Ecken runder machen
       ),
       leading: 
-        Container(
+        SizedBox(
           width: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -18,7 +19,7 @@ Card customCard(Widget arrow, String direction, Color disColor, Country currCoun
               arrow,
               Container(
                 margin: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                width: 20,
+                width: 30,
                 child: Text(
                   direction,
                 )
@@ -27,29 +28,9 @@ Card customCard(Widget arrow, String direction, Color disColor, Country currCoun
           ),
         ),
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children:[
-          Container(
-            alignment: Alignment.centerLeft,
-            height: 30,
-            width: 30,  
-            margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-            child: SvgPicture.asset(
-            "assets/svg/${currCountry.short.toLowerCase()}.svg",
-            color: disColor,
-            alignment: Alignment.center,
-            fit: BoxFit.scaleDown,
-            ),
-          ),
-          Container(
-            width: 80,
-            child: Text(
-              currCountry.name,
-              style: TextStyle(
-                color: disColor,
-              ),
-            ),
-          ),
+          smallImage(currCountry, color : disColor, width : 30),
         ]
       ),
       trailing: Container(

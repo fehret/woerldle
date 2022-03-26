@@ -3,6 +3,7 @@ import 'package:backdrop/backdrop.dart';
 import 'package:woerldle/pages/achievements.dart';
 import 'package:woerldle/pages/game.dart';
 import 'package:woerldle/pages/login.dart';
+import 'package:flutter_svg_opt/flutter_svg_opt.dart';
 import 'pages/settings.dart';
 
 void main() {
@@ -78,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return BackdropScaffold(
+      resizeToAvoidBottomInset: false,
       appBar: BackdropAppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
