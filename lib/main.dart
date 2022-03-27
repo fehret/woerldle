@@ -81,16 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return BackdropScaffold(
       resizeToAvoidBottomInset: false,
       appBar: BackdropAppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(widget.title),
-            Container(
-              margin: const EdgeInsets.only(left:5.0),
-              child: const Icon(Icons.travel_explore),
-            ),
-          ]
-        ),
+        title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(widget.title),
+          Container(
+            margin: const EdgeInsets.only(left: 5.0),
+            child: const Icon(Icons.travel_explore),
+          ),
+        ]),
         leading: const BackdropToggleButton(
           icon: AnimatedIcons.close_menu,
         ),
@@ -113,9 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //----------------------------------
       // Backlayer wird prozedural erzeugt
-      //---------------------------------- 
+      //----------------------------------
       backLayer: getBackLayer(),
-
     );
   }
 }

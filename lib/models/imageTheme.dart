@@ -16,27 +16,26 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 
+Container smallImage(
+  Country country,
 
-Container smallImage(Country country, 
-  
   //optionale Parameter
   {
-    Color? color, 
-    double? width, 
-    double height = 30, 
-    EdgeInsets margin = const EdgeInsets.fromLTRB(0, 0, 5, 0),
-    String type = "flags",
-  }){
-
+  Color? color,
+  double? width,
+  double height = 30,
+  EdgeInsets margin = const EdgeInsets.fromLTRB(0, 0, 5, 0),
+  String type = "flags",
+}) {
   return Container(
     height: height,
-    width: width,  
+    width: width,
     margin: margin,
     child: SvgPicture.asset(
-    "assets/$type/${country.short.toLowerCase()}.svg",
-    color: color,
-    alignment: Alignment.center,
-    fit: BoxFit.scaleDown,
+      "assets/$type/${country.short.toLowerCase()}.svg",
+      color: color,
+      alignment: Alignment.center,
+      fit: BoxFit.scaleDown,
     ),
   );
 }
