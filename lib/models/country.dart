@@ -1,3 +1,4 @@
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
 
@@ -22,17 +23,16 @@ class Country {
   factory Country.fromJSON(dynamic json) {
     List coords = List.from(json['latlng']);
 
-    return 
-        Country(
-          json['name']['common'] as String,
-          LatLng(coords[0].toDouble(), coords[1].toDouble()),
-          json['cca2'].toLowerCase() as String,
-          json['area'],
-        );
+    return Country(
+      json['name']['common'] as String,
+      LatLng(coords[0].toDouble(), coords[1].toDouble()),
+      json['cca2'].toLowerCase() as String,
+      json['area'],
+    );
   }
 
   //------------------------------
-  // Distanzberechnung über Coords 
+  // Distanzberechnung über Coords
   // und anderes Land
   //------------------------------
   double getDistanceByCoords(LatLng other) {
@@ -75,5 +75,4 @@ class Country {
   String toString() {
     return '{ $name, $coords}';
   }
-
 }

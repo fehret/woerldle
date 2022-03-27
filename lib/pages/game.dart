@@ -20,7 +20,6 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import '../models/imageTheme.dart';
 
-
 class GamePage extends StatefulWidget {
   GamePage({Key? key}) : super(key: key);
 
@@ -87,6 +86,7 @@ class _GamePageState extends State<GamePage>
     //--------------------------------------------
     List<Country> countries =
         rawCountries.map((e) => Country.fromJSON(e)).toList();
+
     return countries;
   }
 
@@ -103,17 +103,28 @@ class _GamePageState extends State<GamePage>
     //List<String> matches = <String>[];
 
     query = query.toLowerCase().replaceAll(" ", "");
-    
+
     //matches.addAll(toMatch.map((e) => e.name));
 
     for (int i = query.length; i > 0; i--) {
+      resMatches += toMatch
+          .where((s) => s.name
+              .toLowerCase()
+              .replaceAll(" ", "")
+              .startsWith(query.substring(0, i)))
+          .toList();
 
-      resMatches += toMatch.where((s) => s.name.toLowerCase().replaceAll(" ", "").startsWith(query.substring(0,i))).toList();
-
-      resMatches += toMatch.where((s) => s.name.toLowerCase().replaceAll(" ", "").contains(query.substring(0,i))).toList();
+      resMatches += toMatch
+          .where((s) => s.name
+              .toLowerCase()
+              .replaceAll(" ", "")
+              .contains(query.substring(0, i)))
+          .toList();
     }
 
-    return [...{...resMatches}];
+    return [
+      ...{...resMatches}
+    ];
   }
 
   testprint() {
@@ -164,7 +175,7 @@ class _GamePageState extends State<GamePage>
             // verbindet
             //------------------------------
             List<Country> countriesReceived = snapshot.data!;
-            countriesReceived.sort(((a, b) =>a.name.compareTo(b.name) ));
+            countriesReceived.sort(((a, b) => a.name.compareTo(b.name)));
             HashMap<String, Country> name2Country = HashMap.fromIterable(
                 countriesReceived,
                 key: (element) => element.name,
@@ -207,7 +218,8 @@ class _GamePageState extends State<GamePage>
                   Card(
                     elevation: 5,
                     margin: const EdgeInsets.all(15),
-                    child: smallImage(countriesReceived[widget.toGuess], color : Colors.red, height : 150.0, type: 'borders'), 
+                    child: smallImage(countriesReceived[widget.toGuess],
+                        color: Colors.red, height: 150.0, type: 'borders'),
                     /*Container(
                       padding: const EdgeInsets.all(5),
                       height: 150,
@@ -236,21 +248,27 @@ class _GamePageState extends State<GamePage>
                               controller: _typeAheadController,
                             ),
                             suggestionsCallback: (pattern) {
-                              if(pattern.isNotEmpty){
+                              if (pattern.isNotEmpty) {
                                 selectedSug = false;
-                                suggestions = getSuggestions(pattern, countriesReceived);
+                                suggestions =
+                                    getSuggestions(pattern, countriesReceived);
 
                                 //Wähle das erste Land in der Suche als ähnlichsten Resultat aus
                                 bestSuggestion = suggestions!.first;
 
                                 return suggestions!.map((e) => e.name).toList();
                               }
-                              return countriesReceived.map((e) => e.name).toList();
+                              return countriesReceived
+                                  .map((e) => e.name)
+                                  .toList();
                             },
                             itemBuilder: (context, String suggestion) {
-                                return ListTile(
-                                  leading: smallImage(countriesReceived.firstWhere((country) => country.name == suggestion), width : 30),
-                                  /*Container(
+                              return ListTile(
+                                leading: smallImage(
+                                    countriesReceived.firstWhere((country) =>
+                                        country.name == suggestion),
+                                    width: 30),
+                                /*Container(
                                     height: 30,
                                     width: 30,  
                                     margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
@@ -261,8 +279,8 @@ class _GamePageState extends State<GamePage>
                                     ),
                                   ),
                                   */
-                                  title: Text(suggestion),
-                                );
+                                title: Text(suggestion),
+                              );
                             },
                             transitionBuilder:
                                 (context, suggestionsBox, controller) {
@@ -272,29 +290,31 @@ class _GamePageState extends State<GamePage>
                               _typeAheadController.text = suggestion;
                               selectedSug = true;
                             },
-                            validator: (value){ 
-                              if(value!.isEmpty){
+                            validator: (value) {
+                              if (value!.isEmpty) {
                                 return 'Bitte wähle ein Land';
-                              }else if(widget.guesses.isEmpty){
+                              } else if (widget.guesses.isEmpty) {
                                 return null;
-                              }else if(selectedSug){
-                                try{
+                              } else if (selectedSug) {
+                                try {
                                   print(value);
-                                  widget.guesses.firstWhere((country) => country.name == value);
+                                  widget.guesses.firstWhere(
+                                      (country) => country.name == value);
                                   return 'Bitte wähle ein noch nicht gewähltes Land';
-                                }catch(e){
+                                } catch (e) {
                                   print(e);
                                   return null;
                                 }
-                              }else{
-                                try{
-                                  widget.guesses.firstWhere((country) => country.name == bestSuggestion?.name);
+                              } else {
+                                try {
+                                  widget.guesses.firstWhere((country) =>
+                                      country.name == bestSuggestion?.name);
                                   return 'Bitte wähle ein noch nicht gewähltes Land';
-                                }catch(e){
+                                } catch (e) {
                                   print(e);
                                   return null;
                                 }
-                              }                               
+                              }
                             },
                             onSaved: (value) => _selectedCountry = value,
                           ),
@@ -307,13 +327,11 @@ class _GamePageState extends State<GamePage>
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
                                 setState(() {
-                                  if(selectedSug){
+                                  if (selectedSug) {
                                     widget.guesses
                                         .add(name2Country[_selectedCountry]!);
-                                  }
-                                  else{
-                                    widget.guesses
-                                        .add(bestSuggestion!);                                   
+                                  } else {
+                                    widget.guesses.add(bestSuggestion!);
                                   }
                                   _selectedCountry = "";
                                   _typeAheadController.text = "";
@@ -325,8 +343,9 @@ class _GamePageState extends State<GamePage>
                       ),
                     ),
                   ),
-                  guessColumn(widget.guesses, countriesReceived[widget.toGuess], false),
-                 ],
+                  guessColumn(
+                      widget.guesses, countriesReceived[widget.toGuess], false),
+                ],
               );
             }
           } else {
@@ -342,7 +361,7 @@ class _GamePageState extends State<GamePage>
   //-----------------------------------
   Widget winPage(List<Country> guesses) {
     Country result = guesses.last;
-    final PopupController _popupLayerController =  PopupController();
+    final PopupController _popupLayerController = PopupController();
 
     return Column(
       children: [
@@ -354,59 +373,59 @@ class _GamePageState extends State<GamePage>
           style: TextStyle(color: Colors.lightGreen, fontSize: 40.0),
         ),
         Container(
-        height: 400,
-        width: 400,
-        child: FlutterMap(
-          options: MapOptions(
-            center: result.coords,
-            zoom: 10,
-            onTap: (_, __) => _popupLayerController.hideAllPopups(),
+          height: 400,
+          width: 400,
+          child: FlutterMap(
+            options: MapOptions(
+              center: result.coords,
+              zoom: 10,
+              onTap: (_, __) => _popupLayerController.hideAllPopups(),
+              minZoom: 3,
+            ),
+            children: [
+              TileLayerWidget(
+                options: TileLayerOptions(
+                    minZoom: 1,
+                    maxZoom: 18,
+                    urlTemplate:
+                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: ['a', 'b', 'c']),
+              ),
+              PopupMarkerLayerWidget(
+                options: PopupMarkerLayerOptions(
+                    popupController: _popupLayerController,
+                    markers: [
+                      CountryMarker(
+                          country: result,
+                          container: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 3,
+                                )),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(40.0),
+                              child: SvgPicture.asset(
+                                "assets/flags/${result.short}.svg",
+                                alignment: Alignment.center,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )),
+                    ],
+                    markerRotateAlignment:
+                        PopupMarkerLayerOptions.rotationAlignmentFor(
+                            AnchorAlign.top),
+                    popupBuilder: (BuildContext context, Marker countryMarker) {
+                      if (countryMarker is CountryMarker) {
+                        return CountryPopup(country: countryMarker.country);
+                      }
+                      return Container();
+                    }),
+              ),
+            ],
           ),
-          children: [
-            TileLayerWidget(
-            options: TileLayerOptions(
-              minZoom: 1,
-              maxZoom: 18,
-              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-              subdomains: ['a', 'b', 'c']
-              ),
-            ),
-            PopupMarkerLayerWidget(
-              options: PopupMarkerLayerOptions(
-                popupController: _popupLayerController,
-                markers: [ 
-                  CountryMarker(
-                    country: result,
-                    container: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 3,
-                        )
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40.0),
-                        child: SvgPicture.asset(
-                        "assets/flags/${result.short}.svg",
-                        alignment: Alignment.center,
-                        fit: BoxFit.cover,
-                        ),
-                      ),
-                    )
-                  ),
-                ],
-                  markerRotateAlignment: PopupMarkerLayerOptions.rotationAlignmentFor(AnchorAlign.top),
-                  popupBuilder: (BuildContext context, Marker countryMarker) {
-                  if(countryMarker is CountryMarker){
-                    return CountryPopup(country: countryMarker.country);
-                  }
-                  return Container();
-                  }
-              ),
-            ),
-          ],
-        ),
         ),
         Card(
           child: ListTile(
@@ -466,8 +485,8 @@ class _GamePageState extends State<GamePage>
         Container(
           margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: const Text(
-          "Leider falsch!",
-          style: TextStyle(color: Colors.red, fontSize: 40.0),
+            "Leider falsch!",
+            style: TextStyle(color: Colors.red, fontSize: 40.0),
           ),
         ),
         Card(
@@ -497,20 +516,19 @@ class _GamePageState extends State<GamePage>
             const Spacer(),
             //const SizedBox.expand(),
             ElevatedButton(
-              child: Row(
-                children: const [
-                  Text("Noch eine Runde!"),
-                  Icon(Icons.arrow_forward_ios_rounded)
-                ],
-              ),
-              onPressed: () {
-                setState(() {
-                  widget.toGuess = -1;
-                  guesses.clear();
-                  widget.reGen = true;
-                });
-              }
-            ),
+                child: Row(
+                  children: const [
+                    Text("Noch eine Runde!"),
+                    Icon(Icons.arrow_forward_ios_rounded)
+                  ],
+                ),
+                onPressed: () {
+                  setState(() {
+                    widget.toGuess = -1;
+                    guesses.clear();
+                    widget.reGen = true;
+                  });
+                }),
           ],
         )
       ],
