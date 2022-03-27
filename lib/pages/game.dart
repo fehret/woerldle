@@ -330,7 +330,7 @@ class _GamePageState extends State<GamePage>
               );
             }
           } else {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator() );
           }
         },
       ),
