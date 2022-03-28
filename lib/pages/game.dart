@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map_marker_popup/extension_api.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:collection';
 import 'package:woerldle/models/country.dart';
@@ -13,12 +12,15 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 
 import '../models/imageTheme.dart';
+
+
+const int SMALL_COUNTRIES = 10000;
+const int Medium_COUNTRIES = 500000;
 
 class GamePage extends StatefulWidget {
   GamePage({Key? key}) : super(key: key);
@@ -30,8 +32,10 @@ class GamePage extends StatefulWidget {
   // aber bisher noch nicht geändert)
   //-------------------------------------
   List<Country> guesses = [];
-  bool reGen = true;
-  int toGuess = -1;
+  bool reGen            = true;
+  int toGuess           = -1;
+  int diff              = 1;
+  int tries             = 4;
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -65,6 +69,12 @@ class _GamePageState extends State<GamePage>
   //  Asynchronität beachten
   //------------------------------
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  getIntValue(key) async {
+    return await SharedPreferences.getInstance().then((prefs){
+        widget.diff = prefs.getInt(key)!;
+    });
+  }
 
   //------------------------------------
   // rootBundle läd aus gegebenen Assets
@@ -127,10 +137,6 @@ class _GamePageState extends State<GamePage>
     ];
   }
 
-  testprint() {
-    print(widget.reGen);
-  }
-
   //------------------------------
   // wird immer bei Aufbau der
   // Seite aufgerufen, läd hier
@@ -140,7 +146,6 @@ class _GamePageState extends State<GamePage>
   void initState() {
     super.initState();
     countries = loadCountries();
-    testprint();
   }
 
   @override
@@ -175,6 +180,10 @@ class _GamePageState extends State<GamePage>
             // verbindet
             //------------------------------
             List<Country> countriesReceived = snapshot.data!;
+
+            //aktualisiere die Schwierigkeit
+            getIntValue("difficulty");
+
             countriesReceived.sort(((a, b) => a.name.compareTo(b.name)));
             HashMap<String, Country> name2Country = HashMap.fromIterable(
                 countriesReceived,
@@ -182,7 +191,27 @@ class _GamePageState extends State<GamePage>
                 value: (element) => element);
 
             if (widget.reGen) {
+
               widget.toGuess = Random().nextInt(countriesReceived.length);
+
+              if(widget.diff == 3){
+                widget.tries = 2;
+              }if(widget.diff == 2){
+                widget.tries = 3;
+              }if(widget.diff == 3){
+                widget.tries = 4;
+              }
+              
+              while(true) {
+                
+                if(widget.diff == 3){
+                  break;
+                }else if(widget.diff == 2 && countriesReceived[widget.toGuess].area > 10000){
+                  break;
+                }else if(widget.diff == 1 && countriesReceived[widget.toGuess].area > 1000){
+                  break;
+                }
+              }
               //------------------------------
               // setzt Einstellung auf false
               //------------------------------
@@ -197,7 +226,7 @@ class _GamePageState extends State<GamePage>
             if (widget.guesses.isNotEmpty &&
                 widget.guesses.last == countriesReceived[widget.toGuess]) {
               return winPage(widget.guesses);
-            } else if (widget.guesses.length > 4) {
+            } else if (widget.guesses.length > widget.tries) {
               return losePage(
                   countriesReceived[widget.toGuess], widget.guesses);
             } else {
@@ -215,21 +244,17 @@ class _GamePageState extends State<GamePage>
                   // nur als Dev-Hilfe,
                   //  zeigt Lösung an
                   //------------------------------
+                 
                   Card(
+                    margin: const EdgeInsets.all(10),
                     elevation: 5,
-                    margin: const EdgeInsets.all(15),
-                    child: smallImage(countriesReceived[widget.toGuess],
-                        color: Colors.red, height: 150.0, type: 'borders'),
-                    /*Container(
-                      padding: const EdgeInsets.all(5),
+                    child:  Container(  
+                      padding: const EdgeInsets.all(10),
                       height: 150,
-                      child: SvgPicture.asset(
-                        "assets/borders/${countriesReceived[widget.toGuess].short.toLowerCase()}.svg",
-                        color: Colors.red,
-                        alignment: Alignment.center,
-                        fit: BoxFit.scaleDown,
-                        ),
-                    ),*/
+                      width: double.infinity,
+                      child: smallImage(countriesReceived[widget.toGuess],
+                          color: Colors.red, height: 150.0, type: 'borders'),
+                    ),
                   ),
                   //------------------------------
                   // Eingabe mit Autocompletion
@@ -297,12 +322,10 @@ class _GamePageState extends State<GamePage>
                                 return null;
                               } else if (selectedSug) {
                                 try {
-                                  print(value);
                                   widget.guesses.firstWhere(
                                       (country) => country.name == value);
                                   return 'Bitte wähle ein noch nicht gewähltes Land';
                                 } catch (e) {
-                                  print(e);
                                   return null;
                                 }
                               } else {
@@ -311,7 +334,6 @@ class _GamePageState extends State<GamePage>
                                       country.name == bestSuggestion?.name);
                                   return 'Bitte wähle ein noch nicht gewähltes Land';
                                 } catch (e) {
-                                  print(e);
                                   return null;
                                 }
                               }
@@ -344,7 +366,7 @@ class _GamePageState extends State<GamePage>
                     ),
                   ),
                   guessColumn(
-                      widget.guesses, countriesReceived[widget.toGuess], false),
+                      widget.guesses, countriesReceived[widget.toGuess], false, widget.diff),
                 ],
               );
             }
@@ -374,18 +396,22 @@ class _GamePageState extends State<GamePage>
         ),
         Container(
           height: 400,
-          width: 400,
+          width: double.infinity,
+          foregroundDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20)
+          ),
           child: FlutterMap(
             options: MapOptions(
               center: result.coords,
               zoom: 10,
               onTap: (_, __) => _popupLayerController.hideAllPopups(),
               minZoom: 3,
+              maxZoom: 18,
             ),
             children: [
               TileLayerWidget(
                 options: TileLayerOptions(
-                    minZoom: 1,
+                    minZoom: 3,
                     maxZoom: 18,
                     urlTemplate:
                         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -495,7 +521,7 @@ class _GamePageState extends State<GamePage>
             title: Text(result.name),
           ),
         ),
-        guessColumn(guesses, result, false),
+        guessColumn(guesses, result, false, widget.diff),
         Row(
           children: [
             const SizedBox(

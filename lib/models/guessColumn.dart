@@ -3,7 +3,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:woerldle/models/country.dart';
 import 'package:woerldle/models/customCard.dart';
 
-Column guessColumn(List<Country> guesses, Country countryToGuess, bool win) {
+Column guessColumn(List<Country> guesses, Country countryToGuess, bool win, int diff) {
   if (win) {
     guesses.removeLast();
   }
@@ -31,7 +31,13 @@ Column guessColumn(List<Country> guesses, Country countryToGuess, bool win) {
         red = 255;
       }
       Color disColor = Color.fromARGB(255, red, green, 0);
-      return customCard(arrow, direction, disColor, currCountry, distance);
+      if(diff == 1){
+        return customCard(currCountry, disColor : disColor, distance : distance, arrow : arrow, direction : direction);
+      }else if(diff == 2){
+        return customCard(currCountry, disColor : disColor , distance : distance);
+      }else{
+        return customCard(currCountry);
+      }
     }).toList(),
   );
 }

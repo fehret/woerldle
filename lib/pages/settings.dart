@@ -1,26 +1,41 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  SettingsPage({Key? key}) : super(key: key);
+
+  String diff = "1";
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String dropdownValue = "1";
 
+  getDiff(key) async {
+    return await SharedPreferences.getInstance().then((prefs){
+        widget.diff = prefs.getInt(key)!.toString();
+    });
+  }
+
+  addInt(String key, int value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, value);
+  }
+  
   @override
   Widget build(BuildContext context) {
+
     return Column(children: [
       ListTile(
         leading: Transform.scale(
           child: const Icon(Icons.settings),
-          scale: 2,
+          scale: 1.5,
         ),
-        title: const Text(
-          "Settings",
-          style: TextStyle(fontSize: 20),
+        title: const Center( 
+          child: Text(
+            "Settings",
+            style: TextStyle(fontSize: 20),
+            ),
         ),
       ),
       const Divider(
@@ -32,27 +47,58 @@ class _SettingsPageState extends State<SettingsPage> {
       // Row wäre auch denkbar,
       // hätte mehr kreative Freiheiten
       //-------------------------------
-      ListTile(
-        leading: DropdownButton(
-          value: dropdownValue,
-          style: const TextStyle(color: Colors.deepPurple),
-          onChanged: (String? newValue) {
-            setState(() {
-              dropdownValue = newValue!;
-            });
-          },
-          items: <String>['1', '2', '3', '4']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
-                style: const TextStyle(color: Colors.deepPurple),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [ 
+          Container(
+            margin: const EdgeInsets.only(left : 15),
+            child: const Text(
+              "Schwierigkeit",
+              style: TextStyle(
+                fontSize: 20,
               ),
-            );
-          }).toList(),
-        ),
-        title: const Text("Schwierigkeit"),
+
+              ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
+            child: DropdownButton<String>(
+              
+              value: widget.diff,
+              style: const TextStyle(color: Colors.deepPurple),
+              onChanged: (String? newValue) {
+                setState(() {
+                  widget.diff = newValue!;
+                  addInt("difficulty", int.parse(widget.diff));
+                });
+              },
+              items: [['1',Icons.sentiment_very_satisfied_sharp], ['2',Icons.sentiment_satisfied], ['3',Icons.sentiment_very_dissatisfied_outlined]]
+                  .map<DropdownMenuItem<String>>((List list) {
+                return DropdownMenuItem<String>(
+                  value: list[0],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        list[0],
+                        style: const TextStyle(
+                          color: Colors.deepPurple,
+                          fontSize: 20
+                          ),
+                      ),
+                      Icon(list[1]),
+                    ]
+                  )
+                );
+              }).toList(),
+              icon: const Icon(Icons.arrow_drop_down),
+              iconSize: 42,
+              underline: const SizedBox(),
+            ),
+          ),
+        ]
       )
     ]);
   }

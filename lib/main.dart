@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> pages = [
     GamePage(),
     const AchievementsPage(),
-    const SettingsPage(),
+    SettingsPage(),
     const LoginPage()
   ];
 
@@ -53,26 +53,43 @@ class _MyHomePageState extends State<MyHomePage> {
   // Funktion gibt Backlayer als Widget zurück
   // Änderung bzgl. Design müssen hier getätigt werden
   //--------------------------------------------------
-  Widget getBackLayer() => BackdropNavigationBackLayer(
+  Widget getBackLayer() => Center( 
+    child: BackdropNavigationBackLayer(
           items: const [
-            ListTile(
-              leading: Icon(Icons.gamepad_outlined),
-              title: Text("Game"),
-            ),
-            ListTile(
-              leading: Icon(Icons.check),
-              title: Text("Achievements"),
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Settings"),
-            )
+              Card(
+                color: Colors.green,
+                margin: EdgeInsets.symmetric(horizontal : 100.0),
+                elevation : 10,
+                child : ListTile(
+                leading: Icon(Icons.gamepad_outlined),
+                title: Text("Game"),
+                ),
+              ),
+              Card(
+                color: Colors.green,
+                margin: EdgeInsets.symmetric(horizontal : 100.0),
+                elevation : 10,
+                child : ListTile(
+                leading: Icon(Icons.check),
+                title: Text("Achievements"),
+                ),
+              ),
+              Card(
+                color: Colors.green,
+                margin: EdgeInsets.symmetric(horizontal : 100.0),
+                elevation : 10,
+                child : ListTile(
+                leading: Icon(Icons.settings),
+                title: Text("Settings"),
+                ),
+              ),
           ],
           //---------------------------------
           // setzt dementsprechend den Index
           //---------------------------------
+          itemPadding: const EdgeInsets.only( bottom : 500.0),
           onTap: (int pos) => {setState(() => _pageIndex = pos)},
-          separatorBuilder: (context, position) => const Divider());
+          separatorBuilder: (context, position) => const Divider()));
 
   //Grundstruktur der Applikation
   //Auf der Seiten werden alle Seiten geladen

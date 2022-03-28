@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:woerldle/models/country.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +24,7 @@ Container smallImage(
       fit: BoxFit.contain,
       height: height,
       width: width,
+      
     ),
   );
 }
