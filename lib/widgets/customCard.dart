@@ -33,7 +33,7 @@ Card customCard(Country currCountry,
         width: 70,
         alignment: Alignment.centerRight,
         child: distance == 0
-            ? Text("")
+            ? const Text("")
             : Text(distance.round().toString() + " km"),
       ),
     ),
