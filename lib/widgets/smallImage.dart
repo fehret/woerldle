@@ -24,7 +24,6 @@ Container smallImage(
       fit: BoxFit.contain,
       height: height,
       width: width,
-      
     ),
   );
 }

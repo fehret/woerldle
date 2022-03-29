@@ -1,4 +1,3 @@
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
 
@@ -12,9 +11,15 @@ class Country {
   String name;
   String short;
   LatLng coords;
+  //Coords mapCoords;
   num area;
 
-  Country(this.name, this.coords, this.short, this.area);
+  Country(
+    this.name,
+    this.coords,
+    this.short,
+    this.area,
+  );
 
   //-------------------------------
   // ermöglicht Init aus JSON
@@ -28,7 +33,41 @@ class Country {
       LatLng(coords[0].toDouble(), coords[1].toDouble()),
       json['cca2'].toLowerCase() as String,
       json['area'],
+      //mapProjection(LatLng(coords[0].toDouble(), coords[1].toDouble()))
     );
+  }
+
+  /*static Coords mapProjection(LatLng mapCoords) {
+    double lat = mapCoords.latitude;
+    double long = mapCoords.longitude;
+    double mapWidth = 40075;
+    double mapHeight = 10002 * 2;
+
+    double x = (long + 180) * (mapWidth / 360);
+    double latRad = lat * pi / 180;
+
+    double mercN = log(tan((pi / 4) + (latRad / 2)));
+    double y = (mapHeight / 2) - (mapWidth * mercN / (2 * pi));
+
+    return Coords(x, y);
+  }*/
+
+  // not really useable
+  double mapDistance(LatLng other) {
+    return sqrt(pow((coords.latitude - other.latitude), 2) +
+        pow((coords.longitude - other.longitude), 2));
+  }
+
+  double mapDirection(LatLng other) {
+    double w = other.latitude - coords.latitude;
+    double h = other.longitude - coords.longitude;
+
+    double atanCalc = atan(h / w);
+    if (w < 0 || h < 0) atanCalc += pi;
+    if (w > 0 && h < 0) atanCalc -= pi;
+    if (atanCalc < 0) atanCalc += 2 * pi;
+
+    return (atanCalc % (2 * pi));
   }
 
   //------------------------------

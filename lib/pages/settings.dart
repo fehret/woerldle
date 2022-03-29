@@ -47,59 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
       // Row wäre auch denkbar,
       // hätte mehr kreative Freiheiten
       //-------------------------------
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [ 
-          Container(
-            margin: const EdgeInsets.only(left : 15),
-            child: const Text(
-              "Schwierigkeit",
-              style: TextStyle(
-                fontSize: 20,
-              ),
-
-              ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-            child: DropdownButton<String>(
-              
-              value: widget.diff,
-              style: const TextStyle(color: Colors.deepPurple),
-              onChanged: (String? newValue) {
-                setState(() {
-                  widget.diff = newValue!;
-                  addInt("difficulty", int.parse(widget.diff));
-                });
-              },
-              items: [['1',Icons.sentiment_very_satisfied_sharp], ['2',Icons.sentiment_satisfied], ['3',Icons.sentiment_very_dissatisfied_outlined]]
-                  .map<DropdownMenuItem<String>>((List list) {
-                return DropdownMenuItem<String>(
-                  value: list[0],
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        list[0],
-                        style: const TextStyle(
-                          color: Colors.deepPurple,
-                          fontSize: 20
-                          ),
-                      ),
-                      Icon(list[1]),
-                    ]
-                  )
-                );
-              }).toList(),
-              icon: const Icon(Icons.arrow_drop_down),
-              iconSize: 42,
-              underline: const SizedBox(),
-            ),
-          ),
-        ]
-      )
+      
     ]);
   }
 }

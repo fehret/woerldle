@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woerldle/pages/achievements.dart';
 import 'package:woerldle/pages/game.dart';
 import 'package:woerldle/pages/login.dart';
@@ -36,65 +37,185 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _pageIndex = 0;
+class _MyHomePageState extends State<MyHomePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
-  //------------------------------------
-  // Liste der Seiten für die Navigation
-  //------------------------------------
-  final List<Widget> pages = [
-    GamePage(),
-    const AchievementsPage(),
-    SettingsPage(),
-    const LoginPage()
-  ];
+  int _pageIndex = 0;
+  int difficulty = 1;
+  bool darkMode = false;
+
+  void toggleDarkMode(value) async {}
+
+  getPrefDiff() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      difficulty = prefs.getInt('difficulty') ?? 1;
+    });
+  }
+
+  setPref(mode, value) async {
+    switch (mode) {
+      case "difficulty":
+        final prefs = await SharedPreferences.getInstance();
+        int current = prefs.getInt("difficulty") ?? 1;
+
+        if (value != current) {
+          prefs.setInt('difficulty', int.parse(value));
+          setState(() {
+            difficulty = int.parse(value);
+          });
+        }
+
+        break;
+      case "darkMode":
+        final prefs = await SharedPreferences.getInstance();
+        bool readDarkMode = prefs.getBool('darkMode') ?? false;
+        prefs.setBool('darkMode', !readDarkMode);
+        setState(() {
+          darkMode = !readDarkMode;
+        });
+        break;
+      default:
+    }
+  }
+
+  pageWrapper(pageNumber) {
+    switch (pageNumber) {
+      case 0:
+        return GamePage();
+      case 1:
+        return AchievementsPage();
+      case 2:
+        return SettingsPage();
+      case 3:
+        return LoginPage();
+
+      default:
+        return GamePage();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPrefDiff();
+  }
 
   //--------------------------------------------------
   // Funktion gibt Backlayer als Widget zurück
   // Änderung bzgl. Design müssen hier getätigt werden
   //--------------------------------------------------
-  Widget getBackLayer() => Center( 
-    child: BackdropNavigationBackLayer(
-          items: const [
-              Card(
-                color: Colors.green,
-                margin: EdgeInsets.symmetric(horizontal : 100.0),
-                elevation : 10,
-                child : ListTile(
+  Widget getBackLayer(BuildContext context) => Center(
+          child: BackdropNavigationBackLayer(
+              items: [
+            const Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              elevation: 10,
+              child: ListTile(
                 leading: Icon(Icons.gamepad_outlined),
                 title: Text("Game"),
-                ),
               ),
-              Card(
-                color: Colors.green,
-                margin: EdgeInsets.symmetric(horizontal : 100.0),
-                elevation : 10,
-                child : ListTile(
+            ),
+            const Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              elevation: 10,
+              child: ListTile(
                 leading: Icon(Icons.check),
                 title: Text("Achievements"),
-                ),
               ),
-              Card(
-                color: Colors.green,
-                margin: EdgeInsets.symmetric(horizontal : 100.0),
-                elevation : 10,
-                child : ListTile(
+            ),
+            const Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              elevation: 10,
+              child: ListTile(
                 leading: Icon(Icons.settings),
                 title: Text("Settings"),
-                ),
               ),
+            ),
+            const Text("Settings"),
+            Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              elevation: 10,
+              child: ListTile(
+                  leading: const Icon(Icons.dark_mode),
+                  title: const Text("Dark mode"),
+                  trailing: Checkbox(
+                      value: darkMode,
+                      onChanged: (newValue) {
+                        setPref("darkMode", newValue);
+                      })),
+            ),
+            Card(
+                color: Colors.white,
+                margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                elevation: 10,
+                child: ListTile(
+                  title: Container(
+                    margin: const EdgeInsets.only(left: 15),
+                    child: const Text(
+                      "Schwierigkeit",
+                    ),
+                  ),
+                  trailing: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: DropdownButton<String>(
+                      value: difficulty.toString(),
+                      style: const TextStyle(color: Colors.deepPurple),
+                      onChanged: (String? newValue) {
+                        setPref("difficulty", newValue!);
+                      },
+                      items: [
+                        [1, Icons.sentiment_very_satisfied_sharp],
+                        [2, Icons.sentiment_satisfied],
+                        [3, Icons.sentiment_very_dissatisfied_outlined]
+                      ].map<DropdownMenuItem<String>>((List list) {
+                        return DropdownMenuItem<String>(
+                            value: list[0].toString(),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    list[0].toString(),
+                                    style: const TextStyle(
+                                        color: Colors.deepPurple, fontSize: 20),
+                                  ),
+                                  Icon(list[1]),
+                                ]));
+                      }).toList(),
+                      icon: const Icon(Icons.arrow_drop_down),
+                      iconSize: 42,
+                      underline: const SizedBox(),
+                    ),
+                  ),
+                ))
           ],
-          //---------------------------------
-          // setzt dementsprechend den Index
-          //---------------------------------
-          itemPadding: const EdgeInsets.only( bottom : 500.0),
-          onTap: (int pos) => {setState(() => _pageIndex = pos)},
-          separatorBuilder: (context, position) => const Divider()));
+              //---------------------------------
+              // setzt dementsprechend den Index
+              //---------------------------------
+              itemPadding: const EdgeInsets.only(bottom: 500.0),
+              onTap: (int pos) {
+                setState(() {
+                  _pageIndex = pos;
+                });
+              },
+              separatorBuilder: (context, position) => const Divider()));
 
   //Grundstruktur der Applikation
   //Auf der Seiten werden alle Seiten geladen
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BackdropScaffold(
       resizeToAvoidBottomInset: false,
       appBar: BackdropAppBar(
@@ -109,13 +230,8 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: AnimatedIcons.close_menu,
         ),
         actions: <Widget>[
-          //------------------------------------------
-          // Profil-Button
-          //  Profilseite sollte immer die letzte sein
-          //------------------------------------------
           IconButton(
-              onPressed: () =>
-                  {setState((() => _pageIndex = pages.length - 1))},
+              onPressed: () => {setState((() => _pageIndex = 3))},
               icon: const Icon(Icons.person))
         ],
       ),
@@ -123,12 +239,12 @@ class _MyHomePageState extends State<MyHomePage> {
       //------------------------------------
       // Front-Layer zeigt gewählte Seite an
       //------------------------------------
-      frontLayer: pages[_pageIndex],
+      frontLayer: pageWrapper(_pageIndex),
 
       //----------------------------------
       // Backlayer wird prozedural erzeugt
       //----------------------------------
-      backLayer: getBackLayer(),
+      backLayer: getBackLayer(context),
     );
   }
 }

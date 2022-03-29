@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:collection';
 import 'package:woerldle/models/country.dart';
-import 'package:woerldle/models/guessColumn.dart';
-import 'package:woerldle/models/countryPopup.dart';
+import 'package:woerldle/widgets/guessColumn.dart';
+import 'package:woerldle/pages/countryPopup.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -16,15 +16,12 @@ import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 
-import '../models/imageTheme.dart';
-
+import '../widgets/smallImage.dart';
 
 const int SMALL_COUNTRIES = 10000;
 const int Medium_COUNTRIES = 500000;
 
 class GamePage extends StatefulWidget {
-  GamePage({Key? key}) : super(key: key);
-
   //-------------------------------------
   // Halte getätigte Guesses weiter oben,
   // sonst Fehler durch Seitenwechsel
@@ -32,10 +29,13 @@ class GamePage extends StatefulWidget {
   // aber bisher noch nicht geändert)
   //-------------------------------------
   List<Country> guesses = [];
-  bool reGen            = true;
-  int toGuess           = -1;
-  int diff              = 1;
-  int tries             = 4;
+  bool reGen = true;
+  bool darkMode = false;
+  int toGuess = -1;
+  int diff = 1;
+  int tries = 4;
+
+  GamePage({Key? key}) : super(key: key);
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -46,9 +46,10 @@ class GamePage extends StatefulWidget {
 //  dann müssen wantKeepAlive und build anders überschrieben werden
 //-----------------------------------------------------------------
 class _GamePageState extends State<GamePage>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+//with AutomaticKeepAliveClientMixin {
+{
+  /*@override
+  bool get wantKeepAlive => true;*/
 
   //------------------------------
   // alle Variablen, die für die
@@ -56,6 +57,8 @@ class _GamePageState extends State<GamePage>
   //------------------------------
   late Future<List<Country>> countries;
   late int toGuess;
+  int difficulty = 1;
+  bool darkMode = false;
 
   //------------------------------
   // Variablen für Autocompletion
@@ -70,10 +73,31 @@ class _GamePageState extends State<GamePage>
   //------------------------------
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  getIntValue(key) async {
-    return await SharedPreferences.getInstance().then((prefs){
-        widget.diff = prefs.getInt(key)!;
-    });
+  checkPrefValue(key) async {
+    print("game: darkMode: $darkMode, difficulty: $difficulty");
+    switch (key) {
+      case "difficulty":
+        int d = await SharedPreferences.getInstance().then((prefs) {
+          return prefs.getInt(key) ?? difficulty;
+        });
+        if (d != difficulty) {
+          setState(() {
+            difficulty = d;
+            widget.reGen = true;
+            widget.guesses = [];
+          });
+        }
+        break;
+      case "darkMode":
+        SharedPreferences.getInstance().then((prefs) {
+          setState(() {
+            darkMode = prefs.getBool(key) ?? darkMode;
+            widget.reGen = false;
+          });
+        });
+        break;
+      default:
+    }
   }
 
   //------------------------------------
@@ -151,7 +175,7 @@ class _GamePageState extends State<GamePage>
   @override
   Widget build(BuildContext context) {
     // bei AutomaticKeepAliveClientMixin nötig
-    super.build(context);
+    //super.build(context);
 
     //------------------------------
     // Animiert Änderungen in der Seite
@@ -182,7 +206,19 @@ class _GamePageState extends State<GamePage>
             List<Country> countriesReceived = snapshot.data!;
 
             //aktualisiere die Schwierigkeit
-            getIntValue("difficulty");
+            checkPrefValue("difficulty");
+            switch (difficulty) {
+              case 1:
+                widget.tries = 4;
+                break;
+              case 2:
+                widget.tries = 3;
+                break;
+              case 3:
+                widget.tries = 2;
+                break;
+              default:
+            }
 
             countriesReceived.sort(((a, b) => a.name.compareTo(b.name)));
             HashMap<String, Country> name2Country = HashMap.fromIterable(
@@ -191,30 +227,18 @@ class _GamePageState extends State<GamePage>
                 value: (element) => element);
 
             if (widget.reGen) {
-
-              widget.toGuess = Random().nextInt(countriesReceived.length);
-
-              if(widget.diff == 3){
-                widget.tries = 2;
-              }if(widget.diff == 2){
-                widget.tries = 3;
-              }if(widget.diff == 3){
-                widget.tries = 4;
-              }
-              
-              while(true) {
-                
-                if(widget.diff == 3){
+              while (true) {
+                widget.toGuess = Random().nextInt(countriesReceived.length);
+                if (difficulty == 3) {
                   break;
-                }else if(widget.diff == 2 && countriesReceived[widget.toGuess].area > 10000){
+                } else if (difficulty == 2 &&
+                    countriesReceived[widget.toGuess].area > 10000) {
                   break;
-                }else if(widget.diff == 1 && countriesReceived[widget.toGuess].area > 1000){
+                } else if (difficulty == 1 &&
+                    countriesReceived[widget.toGuess].area > 1000) {
                   break;
                 }
               }
-              //------------------------------
-              // setzt Einstellung auf false
-              //------------------------------
               widget.reGen = false;
             }
 
@@ -244,11 +268,11 @@ class _GamePageState extends State<GamePage>
                   // nur als Dev-Hilfe,
                   //  zeigt Lösung an
                   //------------------------------
-                 
+
                   Card(
                     margin: const EdgeInsets.all(10),
                     elevation: 5,
-                    child:  Container(  
+                    child: Container(
                       padding: const EdgeInsets.all(10),
                       height: 150,
                       width: double.infinity,
@@ -365,13 +389,13 @@ class _GamePageState extends State<GamePage>
                       ),
                     ),
                   ),
-                  guessColumn(
-                      widget.guesses, countriesReceived[widget.toGuess], false, widget.diff),
+                  guessColumn(widget.guesses, countriesReceived[widget.toGuess],
+                      false, difficulty),
                 ],
               );
             }
           } else {
-            return const Center(child: CircularProgressIndicator() );
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
@@ -397,9 +421,8 @@ class _GamePageState extends State<GamePage>
         Container(
           height: 400,
           width: double.infinity,
-          foregroundDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20)
-          ),
+          foregroundDecoration:
+              BoxDecoration(borderRadius: BorderRadius.circular(20)),
           child: FlutterMap(
             options: MapOptions(
               center: result.coords,
@@ -521,7 +544,7 @@ class _GamePageState extends State<GamePage>
             title: Text(result.name),
           ),
         ),
-        guessColumn(guesses, result, false, widget.diff),
+        guessColumn(guesses, result, false, difficulty),
         Row(
           children: [
             const SizedBox(
