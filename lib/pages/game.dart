@@ -232,10 +232,10 @@ class _GamePageState extends State<GamePage>
                 if (difficulty == 3) {
                   break;
                 } else if (difficulty == 2 &&
-                    countriesReceived[widget.toGuess].area > 10000) {
+                    countriesReceived[widget.toGuess].area > Medium_COUNTRIES) {
                   break;
                 } else if (difficulty == 1 &&
-                    countriesReceived[widget.toGuess].area > 1000) {
+                    countriesReceived[widget.toGuess].area > SMALL_COUNTRIES) {
                   break;
                 }
               }
@@ -313,21 +313,12 @@ class _GamePageState extends State<GamePage>
                             },
                             itemBuilder: (context, String suggestion) {
                               return ListTile(
-                                leading: smallImage(
-                                    countriesReceived.firstWhere((country) =>
-                                        country.name == suggestion),
-                                    width: 30),
-                                /*Container(
-                                    height: 30,
-                                    width: 30,  
-                                    margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: SvgPicture.asset(
-                                    "assets/flags/$shortTerm.svg",
-                                    alignment: Alignment.center,
-                                    fit: BoxFit.scaleDown,
-                                    ),
-                                  ),
-                                  */
+                                leading: FractionallySizedBox(
+                                  child: Image.asset("assets/png100px/${countriesReceived.firstWhere((country) =>
+                                          country.name == suggestion).short}.png"),
+                                  heightFactor: 0.5,
+                                  widthFactor: 0.2,
+                                ),
                                 title: Text(suggestion),
                               );
                             },

@@ -37,4 +37,10 @@ flutter:
     - assets/countries/
     - assets/borders/
     - assets/flags/
+    - assets/png100px/af.png
+    - assets/png100px/al.png
+    - assets/png100px/dz.png
+    - assets/png100px/
+    - assets/png250px/
+    - assets/png1000px/
   uses-material-design: true
