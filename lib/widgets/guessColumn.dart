@@ -18,12 +18,12 @@ Column guessColumn(
         angle = currCountry.mapDirection(countryToGuess.coords);
         distance = currCountry.getDistanceByCountry(countryToGuess);
         print("angle: $angle");
-        //dir = (((angle + (15 / 16) * pi) / (pi / 4)).abs()).round();
-        dir = 0;
+        dir = (((angle - (1 / 16) * pi) / (pi / 4)).abs()).round();
+        //dir = 0;
       } else {
         angle = currCountry.getInitialBearing(countryToGuess.coords);
         distance = currCountry.getDistanceByCountry(countryToGuess);
-        dir = (((angle + (15 / 16) * pi) / (pi / 4)).abs()).round();
+        dir = (((angle - (1 / 16) * pi) / (pi / 4)).abs()).round();
       }
 
       direction = ["S", "SW", "W", "NW", "N", "NE", "E", "SE", "S"][dir];
