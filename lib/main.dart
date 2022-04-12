@@ -20,9 +20,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      onGenerateTitle: (BuildContext context) =>
-        //AppLocalizations.of(context)!.appTitle,
-        "Test",
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
