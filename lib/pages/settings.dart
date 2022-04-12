@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// Lokalisierung
+// import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class SettingsPage extends StatefulWidget {
   SettingsPage({Key? key}) : super(key: key);
 
@@ -31,9 +36,9 @@ class _SettingsPageState extends State<SettingsPage> {
           child: const Icon(Icons.settings),
           scale: 1.5,
         ),
-        title: const Center( 
+        title: Center(
           child: Text(
-            "Settings",
+            AppLocalizations.of(context)!.settings,
             style: TextStyle(fontSize: 20),
             ),
         ),

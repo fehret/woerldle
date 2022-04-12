@@ -1,0 +1,18 @@
+{
+  "appTitle": "Woerdle",
+  "difficulty": "Difficulty",
+  "darkMode": "Darkmode",
+  "settings": "Settings",
+  "achievements": "Achievements",
+  "game": "Game",
+  "whichCountry": "Which country is depicted here?",
+  "country": "Country",
+  "pleaseChooseCountry": "Please select a country",
+  "pleaseChooseAnother": "Please choose a not already chosen country",
+  "check": "Check",
+  "share": "Share",
+  "nextRound": "Next Game",
+  "anotherRound": "Another Game!",
+  "wrong": "Wrong!",
+  "right": "Right!"
+}

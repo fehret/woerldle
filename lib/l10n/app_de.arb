@@ -1,0 +1,18 @@
+{
+  "appTitle": "Wördle",
+  "difficulty": "Schwierigkeit",
+  "darkMode": "Darkmode",
+  "settings": "Einstellungen",
+  "achievements": "Errungenschaften",
+  "game": "Spiel",
+  "whichCountry": "Welches Land wird dargestellt?",
+  "country": "Land",
+  "pleaseChooseCountry": "Bitte wähle ein Land",
+  "pleaseChooseAnother": "Bitte wähle ein noch nicht gewähltes Land",
+  "check": "Prüfen",
+  "share": "Teilen",
+  "nextRound": "Nächste Runde",
+  "anotherRound": "Noch eine Runde!",
+  "wrong": "Leider falsch!",
+  "right": "Korrekt!"
+}

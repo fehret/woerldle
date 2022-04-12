@@ -18,6 +18,10 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import '../widgets/smallImage.dart';
 
+// Lokalisierung
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 const int SMALL_COUNTRIES = 10000;
 const int Medium_COUNTRIES = 500000;
 
@@ -289,11 +293,11 @@ class _GamePageState extends State<GamePage>
                       padding: const EdgeInsets.all(32.0),
                       child: Column(
                         children: <Widget>[
-                          const Text('Welches Land wird dargestellt?'),
+                          Text(AppLocalizations.of(context)!.whichCountry),
                           TypeAheadFormField(
                             textFieldConfiguration: TextFieldConfiguration(
                               decoration:
-                                  const InputDecoration(labelText: 'Land'),
+                                  InputDecoration(labelText: AppLocalizations.of(context)!.country),
                               controller: _typeAheadController,
                             ),
                             suggestionsCallback: (pattern) {
@@ -332,14 +336,14 @@ class _GamePageState extends State<GamePage>
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Bitte wähle ein Land';
+                                return AppLocalizations.of(context)!.pleaseChooseCountry;
                               } else if (widget.guesses.isEmpty) {
                                 return null;
                               } else if (selectedSug) {
                                 try {
                                   widget.guesses.firstWhere(
                                       (country) => country.name == value);
-                                  return 'Bitte wähle ein noch nicht gewähltes Land';
+                                  return AppLocalizations.of(context)!.pleaseChooseAnother;
                                 } catch (e) {
                                   return null;
                                 }
@@ -347,7 +351,7 @@ class _GamePageState extends State<GamePage>
                                 try {
                                   widget.guesses.firstWhere((country) =>
                                       country.name == bestSuggestion?.name);
-                                  return 'Bitte wähle ein noch nicht gewähltes Land';
+                                  return AppLocalizations.of(context)!.pleaseChooseAnother;
                                 } catch (e) {
                                   return null;
                                 }
@@ -359,7 +363,7 @@ class _GamePageState extends State<GamePage>
                             height: 10.0,
                           ),
                           ElevatedButton(
-                            child: const Text('Prüfen'),
+                            child: Text(AppLocalizations.of(context)!.check),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
@@ -405,8 +409,8 @@ class _GamePageState extends State<GamePage>
         const SizedBox(
           height: 20.0,
         ),
-        const Text(
-          "Korrekt!",
+        Text(
+          AppLocalizations.of(context)!.right,
           style: TextStyle(color: Colors.lightGreen, fontSize: 40.0),
         ),
         Container(
@@ -490,14 +494,14 @@ class _GamePageState extends State<GamePage>
                       child: const Icon(Icons.reply),
                       transform: Matrix4.rotationY(pi),
                     )),
-                const Text("Share"),
+                Text(AppLocalizations.of(context)!.share),
               ],
             ),
             const Spacer(),
             //const SizedBox.expand(),
             Row(
               children: [
-                const Text("Nächste Runde"),
+                Text(AppLocalizations.of(context)!.nextRound),
                 IconButton(
                     onPressed: () {
                       setState(() {
@@ -524,8 +528,8 @@ class _GamePageState extends State<GamePage>
       children: [
         Container(
           margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: const Text(
-            "Leider falsch!",
+          child: Text(
+            AppLocalizations.of(context)!.wrong,
             style: TextStyle(color: Colors.red, fontSize: 40.0),
           ),
         ),
@@ -550,15 +554,15 @@ class _GamePageState extends State<GamePage>
                       child: const Icon(Icons.reply),
                       transform: Matrix4.rotationY(pi),
                     )),
-                const Text("Share"),
+                Text(AppLocalizations.of(context)!.share),
               ],
             ),
             const Spacer(),
             //const SizedBox.expand(),
             ElevatedButton(
                 child: Row(
-                  children: const [
-                    Text("Noch eine Runde!"),
+                  children: [
+                    Text(AppLocalizations.of(context)!.anotherRound),
                     Icon(Icons.arrow_forward_ios_rounded)
                   ],
                 ),

@@ -6,6 +6,8 @@ import 'package:woerldle/pages/game.dart';
 import 'package:woerldle/pages/login.dart';
 import 'package:flutter_svg_opt/flutter_svg_opt.dart';
 import 'pages/settings.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,11 +20,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Wörldle',
+      onGenerateTitle: (BuildContext context) =>
+        //AppLocalizations.of(context)!.appTitle,
+        "Test",
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const MyHomePage(title: 'Wörldle'),
+      // Is needed for generation of localisation files
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('de', ''), // Deutsch ohne Landesspezifizierung
+        Locale('en', ''), // Englisch ohne Landesspezifizierung
+      ],
+      //home: MyHomePage(title: AppLocalizations.of(context)!.appTitle),
+      home: MyHomePage(title: "Wördle"),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -110,41 +126,41 @@ class _MyHomePageState extends State<MyHomePage>
   Widget getBackLayer(BuildContext context) => Center(
           child: BackdropNavigationBackLayer(
               items: [
-            const Card(
+            Card(
               color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
               elevation: 10,
               child: ListTile(
                 leading: Icon(Icons.gamepad_outlined),
-                title: Text("Game"),
+                title: Text(AppLocalizations.of(context)!.game),
               ),
             ),
-            const Card(
+            Card(
               color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
               elevation: 10,
               child: ListTile(
                 leading: Icon(Icons.check),
-                title: Text("Achievements"),
+                title: Text(AppLocalizations.of(context)!.achievements),
               ),
             ),
-            const Card(
+            Card(
               color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
               elevation: 10,
               child: ListTile(
                 leading: Icon(Icons.settings),
-                title: Text("Settings"),
+                title: Text(AppLocalizations.of(context)!.settings),
               ),
             ),
-            const Text("Settings"),
+            Text(AppLocalizations.of(context)!.settings),
             Card(
               color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
               elevation: 10,
               child: ListTile(
                   leading: const Icon(Icons.dark_mode),
-                  title: const Text("Dark mode"),
+                  title: Text(AppLocalizations.of(context)!.darkMode),
                   trailing: Checkbox(
                       value: darkMode,
                       onChanged: (newValue) {
@@ -158,8 +174,8 @@ class _MyHomePageState extends State<MyHomePage>
                 child: ListTile(
                   title: Container(
                     margin: const EdgeInsets.only(left: 15),
-                    child: const Text(
-                      "Schwierigkeit",
+                    child: Text(
+                        AppLocalizations.of(context)!.difficulty,
                     ),
                   ),
                   trailing: Container(
