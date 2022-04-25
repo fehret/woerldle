@@ -27,6 +27,7 @@ dependencies:
   flutter_svg_opt: ^0.0.1
   flutter_osm_plugin: ^0.32.2
   flutter_map_marker_popup: ^2.1.2
+  fl_chart: ^0.50.1
 
 dev_dependencies:
   flutter_test:

@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         Locale('en', ''), // Englisch ohne Landesspezifizierung
       ],
       //home: MyHomePage(title: AppLocalizations.of(context)!.appTitle),
-      home: MyHomePage(title: "Wördle"),
+      home: MyHomePage(title: "Wörldle"),
       debugShowCheckedModeBanner: false,
     );
   }

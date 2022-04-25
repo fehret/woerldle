@@ -110,17 +110,38 @@ class _GamePageState extends State<GamePage>
     });
   }
 
-  addWin() {
+  addWin(int guesses) {
     SharedPreferences.getInstance().then((prefs) {
       int currentValue = prefs.getInt("wins") ?? 0;
+      List<String> currentDates = prefs.getStringList("winStreak") ?? [];
+      List<String> currentGuesses = prefs.getStringList("guessStreak") ?? [];
       prefs.setInt("wins", currentValue + 1);
+      currentDates.add(DateTime.now().weekday.toString());
+      prefs.setStringList("winStreak", currentDates);
+      currentGuesses.add(guesses.toString());
+      prefs.setStringList("guessStreak", currentGuesses);
+
+      List<String> gamesPerDay = prefs.getStringList("gamesPerDay") ??
+          ["0", "0", "0", "0", "0", "0", "0"];
+      gamesPerDay[DateTime.now().weekday - 1] =
+          (int.parse(gamesPerDay[DateTime.now().weekday - 1]) + 1).toString();
+      prefs.setStringList("gamesPerDay", gamesPerDay);
     });
   }
 
   addLose() {
     SharedPreferences.getInstance().then((prefs) {
       int currentValue = prefs.getInt("lose") ?? 0;
+      List<String> currentLosses = prefs.getStringList("loseStreak") ?? [];
       prefs.setInt("lose", currentValue + 1);
+      currentLosses.add(DateTime.now().weekday.toString());
+      prefs.setStringList("loseStreak", currentLosses);
+
+      List<String> gamesPerDay = prefs.getStringList("gamesPerDay") ??
+          ["0", "0", "0", "0", "0", "0", "0"];
+      gamesPerDay[DateTime.now().weekday - 1] =
+          (int.parse(gamesPerDay[DateTime.now().weekday - 1]) + 1).toString();
+      prefs.setStringList("gamesPerDay", gamesPerDay);
     });
   }
 
@@ -273,7 +294,7 @@ class _GamePageState extends State<GamePage>
             //--------------------------------
             if (widget.guesses.isNotEmpty &&
                 widget.guesses.last == countriesReceived[widget.toGuess]) {
-              addWin();
+              addWin(widget.guesses.length);
               return winPage(widget.guesses);
             } else if (widget.guesses.length > widget.tries) {
               addLose();
