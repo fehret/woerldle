@@ -111,17 +111,27 @@ class _GamePageState extends State<GamePage>
     return await rootBundle.loadString('assets/countries.json');
   }
 
+  Future<String> loadFactJson() async {
+    return await rootBundle.loadString('assets/facts.json');
+  }
+
   //-------------------------------
   // lädt Länder aus gegebener JSON
   //-------------------------------
   Future<List<Country>> loadCountries() async {
-    String countryJson = await loadCountryJson();
-    List rawCountries = List.from(jsonDecode(countryJson));
+    String countryJson  = await loadCountryJson();
+    String factJson     = await loadFactJson();
+    List rawCountries   = List.from(jsonDecode(countryJson));
+    List rawFacts       = List.from(jsonDecode(factJson));
 
     //--------------------------------------------
     // führt für jeden Eintrag die
     // factory-Funktion aus um Objekte zu erhalten
     //--------------------------------------------
+    for (var item in items) {
+      
+    }
+    
     List<Country> countries =
         rawCountries.map((e) => Country.fromJSON(e)).toList();
 
@@ -406,31 +416,41 @@ class _GamePageState extends State<GamePage>
 
     return Column(
       children: [
-        const SizedBox(
-          height: 20.0,
-        ),
-        Text(
-          AppLocalizations.of(context)!.right,
-          style: TextStyle(color: Colors.lightGreen, fontSize: 40.0),
-        ),
         Container(
-          height: 400,
-          width: double.infinity,
-          foregroundDecoration:
-              BoxDecoration(borderRadius: BorderRadius.circular(20)),
-          child: FlutterMap(
-            options: MapOptions(
-              center: result.coords,
-              zoom: 10,
-              onTap: (_, __) => _popupLayerController.hideAllPopups(),
-              minZoom: 3,
-              maxZoom: 18,
-            ),
-            children: [
+          child: Text(
+            AppLocalizations.of(context)!.right,
+            style: const TextStyle(color: Colors.lightGreen, fontSize: 40.0),
+          ),
+          margin: const EdgeInsets.symmetric(vertical: 15),
+        ),
+        Expanded(
+          //height: 600,
+          //width: double.infinity,
+          //margin: const EdgeInsets.all(20),
+          //foregroundDecoration:
+          //    BoxDecoration(borderRadius: BorderRadius.circular(20)),
+          //decoration: 
+          //    BoxDecoration(borderRadius: BorderRadius.circular(20)),    
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: 
+              FlutterMap(
+                options: MapOptions(
+                  center: result.coords,
+                  ///MADE BY FILIP MILAK
+                  ///COPYRIGHT
+                  ///NOT PERMITTED TO USE THIS FUNCTION WITHOUT PERMISSION FROM FILIP MILAK
+                  zoom: 23-log(100*result.area),
+                  onTap: (_, __) => _popupLayerController.hideAllPopups(),
+                  minZoom: 3,
+                  maxZoom: 14,
+                  interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                ),
+                children: [
               TileLayerWidget(
                 options: TileLayerOptions(
-                    minZoom: 3,
-                    maxZoom: 18,
+                    //minZoom: 3,
+                    //maxZoom: 12,
                     urlTemplate:
                         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                     subdomains: ['a', 'b', 'c']),
@@ -446,12 +466,12 @@ class _GamePageState extends State<GamePage>
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: Colors.black,
-                                  width: 3,
+                                  width: 1,
                                 )),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(40.0),
-                              child: SvgPicture.asset(
-                                "assets/flags/${result.short}.svg",
+                              child: Image.asset(
+                                "assets/png100px/${result.short}.png",
                                 alignment: Alignment.center,
                                 fit: BoxFit.cover,
                               ),
@@ -469,9 +489,11 @@ class _GamePageState extends State<GamePage>
                     }),
               ),
             ],
+            ),
           ),
         ),
-        Card(
+        /*Card(
+          margin: const EdgeInsets.all(20),
           child: ListTile(
             leading: const Icon(Icons.location_on), //&Text(angle.toString()),
             title: Text(result.name),
@@ -479,42 +501,22 @@ class _GamePageState extends State<GamePage>
         ),
         //const Spacer(),
         //guessColumn(guesses, result, true),
-        //const Spacer(),
+        //const Spacer(),*/
         Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const SizedBox(
-              width: 20.0,
-            ),
-            Column(
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: Transform(
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.reply),
-                      transform: Matrix4.rotationY(pi),
-                    )),
-                Text(AppLocalizations.of(context)!.share),
-              ],
-            ),
-            const Spacer(),
-            //const SizedBox.expand(),
-            Row(
-              children: [
-                Text(AppLocalizations.of(context)!.nextRound),
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.toGuess = -1;
-                        guesses.clear();
-                        widget.reGen = true;
-                      });
-                    },
-                    icon: const Icon(Icons.play_circle_filled))
-              ],
-            ),
+            Text(AppLocalizations.of(context)!.nextRound),
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    widget.toGuess = -1;
+                    guesses.clear();
+                    widget.reGen = true;
+                  });
+                },
+                icon: const Icon(Icons.play_circle_filled))
           ],
-        )
+        ),
       ],
     );
   }

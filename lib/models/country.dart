@@ -12,7 +12,7 @@ class Country {
   String short;
   LatLng coords;
   //Coords mapCoords;
-  num area;
+  double area;
 
   Country(
     this.name,
@@ -32,7 +32,7 @@ class Country {
       json['name']['common'] as String,
       LatLng(coords[0].toDouble(), coords[1].toDouble()),
       json['cca2'].toLowerCase() as String,
-      json['area'],
+      json['area'].toDouble(),
       //mapProjection(LatLng(coords[0].toDouble(), coords[1].toDouble()))
     );
   }

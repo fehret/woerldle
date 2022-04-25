@@ -3,7 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:woerldle/models/country.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../widgets/smallImage.dart';
 
 class CountryMarker extends Marker {
   CountryMarker({required this.country, required container})
@@ -34,20 +33,17 @@ class CountryPopup extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             //TODO Der Gruppe kann man noch etwas hinzufügen
-            smallImage(country, width: 30, type: "flags"),
-            /*
-            Container(
-              height: 30,
-              width: 30,  
-              margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-              child: SvgPicture.asset(
-              "assets/flags/${country.short}.svg",
-              alignment: Alignment.center,
-              fit: BoxFit.scaleDown,
-              
-              ),
-            ),
-            */
+            Table(
+              border: TableBorder.all(),
+              columnWidths: const <int, TableColumnWidth> {
+
+              },
+              children: <TableRow> [
+                TableRow(
+                  children: [Text("dddd")],
+                ),
+              ],
+            )
           ],
         ),
       ),
