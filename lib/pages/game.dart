@@ -104,6 +104,26 @@ class _GamePageState extends State<GamePage>
     }
   }
 
+  setPrefValue(key, value) async {
+    await SharedPreferences.getInstance().then((prefs) {
+      return prefs.setInt(key, value);
+    });
+  }
+
+  addWin() {
+    SharedPreferences.getInstance().then((prefs) {
+      int currentValue = prefs.getInt("wins") ?? 0;
+      prefs.setInt("wins", currentValue + 1);
+    });
+  }
+
+  addLose() {
+    SharedPreferences.getInstance().then((prefs) {
+      int currentValue = prefs.getInt("lose") ?? 0;
+      prefs.setInt("lose", currentValue + 1);
+    });
+  }
+
   //------------------------------------
   // rootBundle läd aus gegebenen Assets
   //------------------------------------
@@ -263,8 +283,10 @@ class _GamePageState extends State<GamePage>
             //--------------------------------
             if (widget.guesses.isNotEmpty &&
                 widget.guesses.last == countriesReceived[widget.toGuess]) {
+              addWin();
               return winPage(widget.guesses);
             } else if (widget.guesses.length > widget.tries) {
+              addLose();
               return losePage(
                   countriesReceived[widget.toGuess], widget.guesses);
             } else {
@@ -306,8 +328,9 @@ class _GamePageState extends State<GamePage>
                           Text(AppLocalizations.of(context)!.whichCountry),
                           TypeAheadFormField(
                             textFieldConfiguration: TextFieldConfiguration(
-                              decoration:
-                                  InputDecoration(labelText: AppLocalizations.of(context)!.country),
+                              decoration: InputDecoration(
+                                  labelText:
+                                      AppLocalizations.of(context)!.country),
                               controller: _typeAheadController,
                             ),
                             suggestionsCallback: (pattern) {
@@ -328,8 +351,8 @@ class _GamePageState extends State<GamePage>
                             itemBuilder: (context, String suggestion) {
                               return ListTile(
                                 leading: FractionallySizedBox(
-                                  child: Image.asset("assets/png100px/${countriesReceived.firstWhere((country) =>
-                                          country.name == suggestion).short}.png"),
+                                  child: Image.asset(
+                                      "assets/png100px/${countriesReceived.firstWhere((country) => country.name == suggestion).short}.png"),
                                   heightFactor: 0.5,
                                   widthFactor: 0.2,
                                 ),
@@ -346,14 +369,16 @@ class _GamePageState extends State<GamePage>
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return AppLocalizations.of(context)!.pleaseChooseCountry;
+                                return AppLocalizations.of(context)!
+                                    .pleaseChooseCountry;
                               } else if (widget.guesses.isEmpty) {
                                 return null;
                               } else if (selectedSug) {
                                 try {
                                   widget.guesses.firstWhere(
                                       (country) => country.name == value);
-                                  return AppLocalizations.of(context)!.pleaseChooseAnother;
+                                  return AppLocalizations.of(context)!
+                                      .pleaseChooseAnother;
                                 } catch (e) {
                                   return null;
                                 }
@@ -361,7 +386,8 @@ class _GamePageState extends State<GamePage>
                                 try {
                                   widget.guesses.firstWhere((country) =>
                                       country.name == bestSuggestion?.name);
-                                  return AppLocalizations.of(context)!.pleaseChooseAnother;
+                                  return AppLocalizations.of(context)!
+                                      .pleaseChooseAnother;
                                 } catch (e) {
                                   return null;
                                 }
