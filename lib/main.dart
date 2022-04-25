@@ -102,9 +102,6 @@ class _MyHomePageState extends State<MyHomePage>
         return AchievementsPage();
       case 2:
         return SettingsPage();
-      case 3:
-        return LoginPage();
-
       default:
         return GamePage();
     }
@@ -169,10 +166,11 @@ class _MyHomePageState extends State<MyHomePage>
                 margin: const EdgeInsets.symmetric(horizontal: 20.0),
                 elevation: 10,
                 child: ListTile(
+                  leading: const Icon(Icons.videogame_asset),
                   title: Container(
                     margin: const EdgeInsets.only(left: 15),
                     child: Text(
-                        AppLocalizations.of(context)!.difficulty,
+                      AppLocalizations.of(context)!.difficulty,
                     ),
                   ),
                   trailing: Container(
@@ -244,8 +242,8 @@ class _MyHomePageState extends State<MyHomePage>
         ),
         actions: <Widget>[
           IconButton(
-              onPressed: () => {setState((() => _pageIndex = 3))},
-              icon: const Icon(Icons.person))
+              onPressed: () => {setState((() => _pageIndex = 1))},
+              icon: const Icon(Icons.emoji_events))
         ],
       ),
 

@@ -15,21 +15,19 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
   getDiff(key) async {
-    return await SharedPreferences.getInstance().then((prefs){
-        widget.diff = prefs.getInt(key)!.toString();
+    return await SharedPreferences.getInstance().then((prefs) {
+      widget.diff = prefs.getInt(key)!.toString();
     });
   }
 
-  addInt(String key, int value) async{
+  addInt(String key, int value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt(key, value);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-
     return Column(children: [
       ListTile(
         leading: Transform.scale(
@@ -40,7 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Text(
             AppLocalizations.of(context)!.settings,
             style: TextStyle(fontSize: 20),
-            ),
+          ),
         ),
       ),
       const Divider(
@@ -52,7 +50,6 @@ class _SettingsPageState extends State<SettingsPage> {
       // Row wäre auch denkbar,
       // hätte mehr kreative Freiheiten
       //-------------------------------
-      
     ]);
   }
 }
