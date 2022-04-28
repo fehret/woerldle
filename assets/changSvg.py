@@ -1,6 +1,4 @@
 import os
-import re
-from sys import flags
 import json
 
 path = "C:\\Users\\fmila\\GitHub\\woerldle\\assets\\borders"
@@ -19,12 +17,23 @@ countries.sort(key=lambda x: x["cca2"].lower())
 data = []
 
 for country in countries:
-    #try: 
+    try: 
         facts[country["cca2"].lower()]
         data.append(country)
         data[-1]['facts'] = facts[country["cca2"].lower()]
-    #except:
-    #    print(F"Das land {country['name']['common']}")
+
+        for idx, fact in enumerate(data[-1]['facts']):
+            if fact is None:
+                #print('Hund')
+                data[-1]['facts'][idx] = 'NA'
+            if fact == 'null':
+                print('null')
+                data[-1]['facts'][idx] = 'NA'
+
+    except:
+        data.append(country)
+        data[-1]['facts'] = facts['fr']
+        print(F"Das land {country['name']['common']}")
 
 
 '''

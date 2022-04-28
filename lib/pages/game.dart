@@ -128,11 +128,7 @@ class _GamePageState extends State<GamePage>
   // rootBundle läd aus gegebenen Assets
   //------------------------------------
   Future<String> loadCountryJson() async {
-    return await rootBundle.loadString('assets/countries.json');
-  }
-
-  Future<String> loadFactJson() async {
-    return await rootBundle.loadString('assets/facts.json');
+    return await rootBundle.loadString('assets/combined.json');
   }
 
   //-------------------------------
@@ -140,17 +136,12 @@ class _GamePageState extends State<GamePage>
   //-------------------------------
   Future<List<Country>> loadCountries() async {
     String countryJson  = await loadCountryJson();
-    String factJson     = await loadFactJson();
     List rawCountries   = List.from(jsonDecode(countryJson));
-    List rawFacts       = List.from(jsonDecode(factJson));
 
     //--------------------------------------------
     // führt für jeden Eintrag die
     // factory-Funktion aus um Objekte zu erhalten
     //--------------------------------------------
-    for (var item in items) {
-      
-    }
     
     List<Country> countries =
         rawCountries.map((e) => Country.fromJSON(e)).toList();
@@ -460,7 +451,7 @@ class _GamePageState extends State<GamePage>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: 
-              FlutterMap(
+                FlutterMap(
                 options: MapOptions(
                   center: result.coords,
                   ///MADE BY FILIP MILAK
@@ -473,61 +464,51 @@ class _GamePageState extends State<GamePage>
                   interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
                 ),
                 children: [
-              TileLayerWidget(
-                options: TileLayerOptions(
-                    //minZoom: 3,
-                    //maxZoom: 12,
-                    urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c']),
-              ),
-              PopupMarkerLayerWidget(
-                options: PopupMarkerLayerOptions(
-                    popupController: _popupLayerController,
-                    markers: [
-                      CountryMarker(
-                          country: result,
-                          container: Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 1,
-                                )),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(40.0),
-                              child: Image.asset(
-                                "assets/png100px/${result.short}.png",
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          )),
-                    ],
-                    markerRotateAlignment:
-                        PopupMarkerLayerOptions.rotationAlignmentFor(
-                            AnchorAlign.top),
-                    popupBuilder: (BuildContext context, Marker countryMarker) {
-                      if (countryMarker is CountryMarker) {
-                        return CountryPopup(country: countryMarker.country);
-                      }
-                      return Container();
-                    }),
-              ),
-            ],
+                   TileLayerWidget(
+                      options: TileLayerOptions(
+                          //minZoom: 3,
+                          //maxZoom: 12,
+                          urlTemplate:
+                              "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          subdomains: ['a', 'b', 'c']),
+                  ),
+                  PopupMarkerLayerWidget(
+                    options: PopupMarkerLayerOptions(
+                        popupController: _popupLayerController,
+                        markers: [
+                          CountryMarker(
+                              country: result,
+                              container: Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 1,
+                                    )),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(40.0),
+                                  child: Image.asset(
+                                    "assets/png100px/${result.short}.png",
+                                    alignment: Alignment.center,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )),
+                        ],
+                        markerRotateAlignment:
+                            PopupMarkerLayerOptions.rotationAlignmentFor(
+                                AnchorAlign.top),
+                        popupBuilder: (BuildContext context, Marker countryMarker) {
+                          if (countryMarker is CountryMarker) {
+                            return CountryPopup(country: countryMarker.country);
+                          }
+                          return Container();
+                        }),
+                  ),
+                ],
             ),
           ),
         ),
-        /*Card(
-          margin: const EdgeInsets.all(20),
-          child: ListTile(
-            leading: const Icon(Icons.location_on), //&Text(angle.toString()),
-            title: Text(result.name),
-          ),
-        ),
-        //const Spacer(),
-        //guessColumn(guesses, result, true),
-        //const Spacer(),*/
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -558,7 +539,7 @@ class _GamePageState extends State<GamePage>
           margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: Text(
             AppLocalizations.of(context)!.wrong,
-            style: TextStyle(color: Colors.red, fontSize: 40.0),
+            style: const TextStyle(color: Colors.red, fontSize: 40.0),
           ),
         ),
         Card(
@@ -591,7 +572,7 @@ class _GamePageState extends State<GamePage>
                 child: Row(
                   children: [
                     Text(AppLocalizations.of(context)!.anotherRound),
-                    Icon(Icons.arrow_forward_ios_rounded)
+                    const Icon(Icons.arrow_forward_ios_rounded)
                   ],
                 ),
                 onPressed: () {
