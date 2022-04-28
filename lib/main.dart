@@ -3,11 +3,10 @@ import 'package:backdrop/backdrop.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woerldle/pages/achievements.dart';
 import 'package:woerldle/pages/game.dart';
-import 'package:woerldle/pages/login.dart';
-import 'package:flutter_svg_opt/flutter_svg_opt.dart';
 import 'pages/settings.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +18,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.green,
@@ -35,7 +38,7 @@ class MyApp extends StatelessWidget {
         Locale('en', ''), // Englisch ohne Landesspezifizierung
       ],
       //home: MyHomePage(title: AppLocalizations.of(context)!.appTitle),
-      home: MyHomePage(title: "Wörldle"),
+      home: const MyHomePage(title: "Wördle"),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -106,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage>
         return GamePage();
     }
   }
-
+  
   @override
   void initState() {
     super.initState();
