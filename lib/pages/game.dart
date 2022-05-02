@@ -163,7 +163,7 @@ class _GamePageState extends State<GamePage>
     // führt für jeden Eintrag die
     // factory-Funktion aus um Objekte zu erhalten
     //--------------------------------------------
-    
+
     List<Country> countries =
         rawCountries.map((e) => Country.fromJSON(e)).toList();
 
@@ -456,7 +456,7 @@ class _GamePageState extends State<GamePage>
       children: [
         Container(
           child: Text(
-            AppLocalizations.of(context)!.right,
+            AppLocalizations.of(context)!.correct,
             style: const TextStyle(color: Colors.lightGreen, fontSize: 40.0),
           ),
           margin: const EdgeInsets.symmetric(vertical: 15),
@@ -467,11 +467,11 @@ class _GamePageState extends State<GamePage>
           //margin: const EdgeInsets.all(20),
           //foregroundDecoration:
           //    BoxDecoration(borderRadius: BorderRadius.circular(20)),
-          //decoration: 
-          //    BoxDecoration(borderRadius: BorderRadius.circular(20)),    
+          //decoration:
+          //    BoxDecoration(borderRadius: BorderRadius.circular(20)),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: 
+            child:
                 FlutterMap(
                 options: MapOptions(
                   center: result.coords,

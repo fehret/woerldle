@@ -1,5 +1,4 @@
 {
-  "appTitle": "Woerdle",
   "difficulty": "Difficulty",
   "darkMode": "Darkmode",
   "settings": "Settings",
@@ -14,5 +13,5 @@
   "nextRound": "Next Game",
   "anotherRound": "Another Game!",
   "wrong": "Wrong!",
-  "right": "Right!"
+  "correct": "Right!"
 }

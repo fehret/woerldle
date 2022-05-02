@@ -1,3 +1,5 @@
+import 'package:country_codes/country_codes.dart';
+import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
@@ -7,9 +9,13 @@ import 'package:woerldle/pages/game.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
+import 'variablen/locale.dart' as locales;
 
-void main() {
+Future<void> main() async {
   runApp(const MyApp());
+  String? locale = await Devicelocale.currentLocale;
+  locales.locale = locale?.substring(0, 2);
+  print("Sprache: " + locales.locale!);
 }
 
 class MyApp extends StatelessWidget {
@@ -38,7 +44,7 @@ class MyApp extends StatelessWidget {
         Locale('en', ''), // Englisch ohne Landesspezifizierung
       ],
       //home: MyHomePage(title: AppLocalizations.of(context)!.appTitle),
-      home: const MyHomePage(title: "Wördle"),
+      home: const MyHomePage(title: "Wörldle"),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -107,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage>
         return GamePage();
     }
   }
-  
+
   @override
   void initState() {
     super.initState();
