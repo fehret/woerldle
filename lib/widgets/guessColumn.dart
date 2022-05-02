@@ -57,11 +57,6 @@ Column guessColumn(
       } else {
         return customCard(currCountry);
       }
-      return customCard(currCountry,
-          disColor: disColor,
-          distance: distance,
-          arrow: arrow,
-          direction: direction);
     }).toList(),
   );
 }

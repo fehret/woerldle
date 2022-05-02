@@ -110,17 +110,38 @@ class _GamePageState extends State<GamePage>
     });
   }
 
-  addWin() {
+  addWin(int guesses) {
     SharedPreferences.getInstance().then((prefs) {
       int currentValue = prefs.getInt("wins") ?? 0;
+      List<String> currentDates = prefs.getStringList("winStreak") ?? [];
+      List<String> currentGuesses = prefs.getStringList("guessStreak") ?? [];
       prefs.setInt("wins", currentValue + 1);
+      currentDates.add(DateTime.now().weekday.toString());
+      prefs.setStringList("winStreak", currentDates);
+      currentGuesses.add(guesses.toString());
+      prefs.setStringList("guessStreak", currentGuesses);
+
+      List<String> gamesPerDay = prefs.getStringList("gamesPerDay") ??
+          ["0", "0", "0", "0", "0", "0", "0"];
+      gamesPerDay[DateTime.now().weekday - 1] =
+          (int.parse(gamesPerDay[DateTime.now().weekday - 1]) + 1).toString();
+      prefs.setStringList("gamesPerDay", gamesPerDay);
     });
   }
 
   addLose() {
     SharedPreferences.getInstance().then((prefs) {
       int currentValue = prefs.getInt("lose") ?? 0;
+      List<String> currentLosses = prefs.getStringList("loseStreak") ?? [];
       prefs.setInt("lose", currentValue + 1);
+      currentLosses.add(DateTime.now().weekday.toString());
+      prefs.setStringList("loseStreak", currentLosses);
+
+      List<String> gamesPerDay = prefs.getStringList("gamesPerDay") ??
+          ["0", "0", "0", "0", "0", "0", "0"];
+      gamesPerDay[DateTime.now().weekday - 1] =
+          (int.parse(gamesPerDay[DateTime.now().weekday - 1]) + 1).toString();
+      prefs.setStringList("gamesPerDay", gamesPerDay);
     });
   }
 
@@ -128,20 +149,21 @@ class _GamePageState extends State<GamePage>
   // rootBundle läd aus gegebenen Assets
   //------------------------------------
   Future<String> loadCountryJson() async {
-    return await rootBundle.loadString('assets/countries.json');
+    return await rootBundle.loadString('assets/combined.json');
   }
 
   //-------------------------------
   // lädt Länder aus gegebener JSON
   //-------------------------------
   Future<List<Country>> loadCountries() async {
-    String countryJson = await loadCountryJson();
-    List rawCountries = List.from(jsonDecode(countryJson));
+    String countryJson  = await loadCountryJson();
+    List rawCountries   = List.from(jsonDecode(countryJson));
 
     //--------------------------------------------
     // führt für jeden Eintrag die
     // factory-Funktion aus um Objekte zu erhalten
     //--------------------------------------------
+
     List<Country> countries =
         rawCountries.map((e) => Country.fromJSON(e)).toList();
 
@@ -273,7 +295,7 @@ class _GamePageState extends State<GamePage>
             //--------------------------------
             if (widget.guesses.isNotEmpty &&
                 widget.guesses.last == countriesReceived[widget.toGuess]) {
-              addWin();
+              addWin(widget.guesses.length);
               return winPage(widget.guesses);
             } else if (widget.guesses.length > widget.tries) {
               addLose();
@@ -432,115 +454,97 @@ class _GamePageState extends State<GamePage>
 
     return Column(
       children: [
-        const SizedBox(
-          height: 20.0,
-        ),
-        Text(
-          AppLocalizations.of(context)!.correct,
-          style: TextStyle(color: Colors.lightGreen, fontSize: 40.0),
-        ),
         Container(
-          height: 400,
-          width: double.infinity,
-          foregroundDecoration:
-              BoxDecoration(borderRadius: BorderRadius.circular(20)),
-          child: FlutterMap(
-            options: MapOptions(
-              center: result.coords,
-              zoom: 10,
-              onTap: (_, __) => _popupLayerController.hideAllPopups(),
-              minZoom: 3,
-              maxZoom: 18,
+          child: Text(
+            AppLocalizations.of(context)!.correct,
+            style: const TextStyle(color: Colors.lightGreen, fontSize: 40.0),
+          ),
+          margin: const EdgeInsets.symmetric(vertical: 15),
+        ),
+        Expanded(
+          //height: 600,
+          //width: double.infinity,
+          //margin: const EdgeInsets.all(20),
+          //foregroundDecoration:
+          //    BoxDecoration(borderRadius: BorderRadius.circular(20)),
+          //decoration:
+          //    BoxDecoration(borderRadius: BorderRadius.circular(20)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child:
+                FlutterMap(
+                options: MapOptions(
+                  center: result.coords,
+                  ///MADE BY FILIP MILAK
+                  ///COPYRIGHT
+                  ///NOT PERMITTED TO USE THIS FUNCTION WITHOUT PERMISSION FROM FILIP MILAK
+                  zoom: 23-log(100*result.area),
+                  onTap: (_, __) => _popupLayerController.hideAllPopups(),
+                  minZoom: 3,
+                  maxZoom: 14,
+                  interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                ),
+                children: [
+                   TileLayerWidget(
+                      options: TileLayerOptions(
+                          //minZoom: 3,
+                          //maxZoom: 12,
+                          urlTemplate:
+                              "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          subdomains: ['a', 'b', 'c']),
+                  ),
+                  PopupMarkerLayerWidget(
+                    options: PopupMarkerLayerOptions(
+                        popupController: _popupLayerController,
+                        markers: [
+                          CountryMarker(
+                              country: result,
+                              container: Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 1,
+                                    )),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(40.0),
+                                  child: Image.asset(
+                                    "assets/png100px/${result.short}.png",
+                                    alignment: Alignment.center,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )),
+                        ],
+                        markerRotateAlignment:
+                            PopupMarkerLayerOptions.rotationAlignmentFor(
+                                AnchorAlign.top),
+                        popupBuilder: (BuildContext context, Marker countryMarker) {
+                          if (countryMarker is CountryMarker) {
+                            return CountryPopup(country: countryMarker.country);
+                          }
+                          return Container();
+                        }),
+                  ),
+                ],
             ),
-            children: [
-              TileLayerWidget(
-                options: TileLayerOptions(
-                    minZoom: 3,
-                    maxZoom: 18,
-                    urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c']),
-              ),
-              PopupMarkerLayerWidget(
-                options: PopupMarkerLayerOptions(
-                    popupController: _popupLayerController,
-                    markers: [
-                      CountryMarker(
-                          country: result,
-                          container: Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 3,
-                                )),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(40.0),
-                              child: SvgPicture.asset(
-                                "assets/flags/${result.short}.svg",
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          )),
-                    ],
-                    markerRotateAlignment:
-                        PopupMarkerLayerOptions.rotationAlignmentFor(
-                            AnchorAlign.top),
-                    popupBuilder: (BuildContext context, Marker countryMarker) {
-                      if (countryMarker is CountryMarker) {
-                        return CountryPopup(country: countryMarker.country);
-                      }
-                      return Container();
-                    }),
-              ),
-            ],
           ),
         ),
-        Card(
-          child: ListTile(
-            leading: const Icon(Icons.location_on), //&Text(angle.toString()),
-            title: Text(result.name),
-          ),
-        ),
-        //const Spacer(),
-        //guessColumn(guesses, result, true),
-        //const Spacer(),
         Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const SizedBox(
-              width: 20.0,
-            ),
-            Column(
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: Transform(
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.reply),
-                      transform: Matrix4.rotationY(pi),
-                    )),
-                Text(AppLocalizations.of(context)!.share),
-              ],
-            ),
-            const Spacer(),
-            //const SizedBox.expand(),
-            Row(
-              children: [
-                Text(AppLocalizations.of(context)!.nextRound),
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.toGuess = -1;
-                        guesses.clear();
-                        widget.reGen = true;
-                      });
-                    },
-                    icon: const Icon(Icons.play_circle_filled))
-              ],
-            ),
+            Text(AppLocalizations.of(context)!.nextRound),
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    widget.toGuess = -1;
+                    guesses.clear();
+                    widget.reGen = true;
+                  });
+                },
+                icon: const Icon(Icons.play_circle_filled))
           ],
-        )
+        ),
       ],
     );
   }
@@ -556,7 +560,7 @@ class _GamePageState extends State<GamePage>
           margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: Text(
             AppLocalizations.of(context)!.wrong,
-            style: TextStyle(color: Colors.red, fontSize: 40.0),
+            style: const TextStyle(color: Colors.red, fontSize: 40.0),
           ),
         ),
         Card(
@@ -589,7 +593,7 @@ class _GamePageState extends State<GamePage>
                 child: Row(
                   children: [
                     Text(AppLocalizations.of(context)!.anotherRound),
-                    Icon(Icons.arrow_forward_ios_rounded)
+                    const Icon(Icons.arrow_forward_ios_rounded)
                   ],
                 ),
                 onPressed: () {
