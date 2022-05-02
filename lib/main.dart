@@ -1,4 +1,5 @@
 import 'package:country_codes/country_codes.dart';
+import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,9 +10,13 @@ import 'package:flutter_svg_opt/flutter_svg_opt.dart';
 import 'pages/settings.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'variablen/locale.dart' as locales;
 
-void main() {
+Future<void> main() async {
   runApp(const MyApp());
+  String? locale = await Devicelocale.currentLocale;
+  locales.locale = locale?.substring(0, 2);
+  print("Sprache: " + locales.locale!);
 }
 
 class MyApp extends StatelessWidget {

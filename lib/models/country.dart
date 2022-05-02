@@ -3,13 +3,7 @@ import 'dart:ui';
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
 import 'package:country_codes/country_codes.dart';
-
-Future<String?> countryCode() async {
-  await CountryCodes.init();
-
-  final Locale? deviceLocale = CountryCodes.getDeviceLocale();
-  return deviceLocale?.languageCode;
-}
+import '../variablen/locale.dart' as locales;
 
 //------------------------------
 // Datenmodell für ein Land
@@ -38,10 +32,10 @@ class Country {
   factory Country.fromJSON(dynamic json) {
     List coords = List.from(json['latlng']);
 
-    String? acc3;
+    String? acc3 = locales.locale;
 
     acc3Conv() async {
-      acc3 = await countryCode();
+      acc3 = acc3?.toUpperCase();
 
       switch(acc3) {
         case "DE":
@@ -104,17 +98,30 @@ class Country {
         case "ZH":
           acc3 = "zho";
           break;
+        default:
+          acc3 = "eng";
       }
+      //print(acc3);
     }
     acc3Conv();
+    print(locales.locale);
 
-    return Country(
-      json['translations']["deu"]['common'] as String,
-      LatLng(coords[0].toDouble(), coords[1].toDouble()),
-      json['cca2'].toLowerCase() as String,
-      json['area'],
-      //mapProjection(LatLng(coords[0].toDouble(), coords[1].toDouble()))
-    );
+    Country land;
+
+    if (acc3 == "eng") {
+      land = Country(json['name']['common'] as String,
+          LatLng(coords[0].toDouble(), coords[1].toDouble()),
+          json['cca2'].toLowerCase() as String,
+          json['area']);
+    } else {
+      land = Country(json['translations'][acc3]['common'] as String,
+          LatLng(coords[0].toDouble(), coords[1].toDouble()),
+          json['cca2'].toLowerCase() as String,
+          json['area']);
+    }
+
+
+    return land;
   }
 
 
