@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woerldle/pages/achievements.dart';
 import 'package:woerldle/pages/game.dart';
-import 'pages/settings.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
@@ -102,9 +102,7 @@ class _MyHomePageState extends State<MyHomePage>
       case 0:
         return GamePage();
       case 1:
-        return AchievementsPage();
-      case 2:
-        return SettingsPage();
+        return const AchievementsPage();
       default:
         return GamePage();
     }
@@ -120,99 +118,114 @@ class _MyHomePageState extends State<MyHomePage>
   // Funktion gibt Backlayer als Widget zurück
   // Änderung bzgl. Design müssen hier getätigt werden
   //--------------------------------------------------
-  Widget getBackLayer(BuildContext context) => Center(
-          child: BackdropNavigationBackLayer(
-              items: [
+  Widget getBackLayer(BuildContext context) => BackdropNavigationBackLayer(
+            items: [
             Card(
               color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              elevation: 10,
-              child: ListTile(
-                leading: Icon(Icons.gamepad_outlined),
-                title: Text(AppLocalizations.of(context)!.game),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)
               ),
-            ),
-            Card(
-              color: Colors.white,
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
               elevation: 10,
-              child: ListTile(
-                leading: Icon(Icons.check),
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                child: Column(
+                  children: <Widget> [
+                    ListTile(
+                      leading: const Icon(Icons.gamepad_outlined),
+                      title: Text(AppLocalizations.of(context)!.game),
+                    ),
+                    const Divider(color: Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
+                    ListTile(
+                leading: const Icon(Icons.check),
                 title: Text(AppLocalizations.of(context)!.achievements),
+                  ),
+                ]
+                ),
               ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(AppLocalizations.of(context)!.settings),
             ),
             Card(
               color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)
+              ),
               elevation: 10,
-              child: ListTile(
-                leading: Icon(Icons.settings),
-                title: Text(AppLocalizations.of(context)!.settings),
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                child: Column(
+                  children: <Widget> [
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      //minVerticalPadding: 10,
+                      leading: const Icon(Icons.dark_mode),
+                      title: Text(
+                        AppLocalizations.of(context)!.darkMode,
+                        textAlign: TextAlign.left,
+                        ),
+                      trailing: SizedBox(
+                        width: 100,
+                        child: CupertinoSwitch(
+                          value: darkMode,
+                          onChanged: (newValue) {
+                            setPref("darkMode", newValue);
+                          })
+                      )
+                    ),
+                    const Divider(color: Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      leading: const Icon(Icons.videogame_asset),
+                      title: Text(
+                          AppLocalizations.of(context)!.difficulty,
+                          textAlign: TextAlign.left,
+                      ),
+                      trailing: Container(
+                        width: 100,
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: DropdownButton<String>(
+                          value: difficulty.toString(),
+                          style: const TextStyle(color: Colors.deepPurple),
+                          onChanged: (String? newValue) {
+                            setPref("difficulty", newValue!);
+                          },
+                          items: [
+                            [1, Icons.sentiment_very_satisfied_sharp],
+                            [2, Icons.sentiment_satisfied],
+                            [3, Icons.sentiment_very_dissatisfied_outlined]
+                          ].map<DropdownMenuItem<String>>((List list) {
+                            return DropdownMenuItem<String>(
+                                value: list[0].toString(),
+                                child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        list[0].toString(),
+                                        style: const TextStyle(
+                                            color: Colors.deepPurple, fontSize: 20),
+                                      ),
+                                      Icon(list[1]),
+                                    ]));
+                          }).toList(),
+                          icon: const Icon(Icons.arrow_drop_down),
+                          iconSize: 42,
+                          underline: const SizedBox(),
+                        ),
+                      ),
+                    ),
+                  ]
+                ),
               ),
             ),
-            Text(AppLocalizations.of(context)!.settings),
-            Card(
-              color: Colors.white,
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              elevation: 10,
-              child: ListTile(
-                  leading: const Icon(Icons.dark_mode),
-                  title: Text(AppLocalizations.of(context)!.darkMode),
-                  trailing: Checkbox(
-                      value: darkMode,
-                      onChanged: (newValue) {
-                        setPref("darkMode", newValue);
-                      })),
-            ),
-            Card(
-                color: Colors.white,
-                margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                elevation: 10,
-                child: ListTile(
-                  leading: const Icon(Icons.videogame_asset),
-                  title: Container(
-                    margin: const EdgeInsets.only(left: 15),
-                    child: Text(
-                      AppLocalizations.of(context)!.difficulty,
-                    ),
-                  ),
-                  trailing: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: DropdownButton<String>(
-                      value: difficulty.toString(),
-                      style: const TextStyle(color: Colors.deepPurple),
-                      onChanged: (String? newValue) {
-                        setPref("difficulty", newValue!);
-                      },
-                      items: [
-                        [1, Icons.sentiment_very_satisfied_sharp],
-                        [2, Icons.sentiment_satisfied],
-                        [3, Icons.sentiment_very_dissatisfied_outlined]
-                      ].map<DropdownMenuItem<String>>((List list) {
-                        return DropdownMenuItem<String>(
-                            value: list[0].toString(),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    list[0].toString(),
-                                    style: const TextStyle(
-                                        color: Colors.deepPurple, fontSize: 20),
-                                  ),
-                                  Icon(list[1]),
-                                ]));
-                      }).toList(),
-                      icon: const Icon(Icons.arrow_drop_down),
-                      iconSize: 42,
-                      underline: const SizedBox(),
-                    ),
-                  ),
-                ))
           ],
               //---------------------------------
               // setzt dementsprechend den Index
@@ -223,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage>
                   _pageIndex = pos;
                 });
               },
-              separatorBuilder: (context, position) => const Divider()));
+              separatorBuilder: (context, position) => const Divider());
 
   //Grundstruktur der Applikation
   //Auf der Seiten werden alle Seiten geladen
