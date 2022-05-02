@@ -27,6 +27,9 @@ dependencies:
   flutter_svg_opt: ^0.0.1
   flutter_osm_plugin: ^0.32.2
   flutter_map_marker_popup: ^2.1.2
+  devicelocale: ^0.5.0
+  flutter_launcher_icons: ^0.9.2
+  country_codes: ^2.1.1
 
 dev_dependencies:
   flutter_test:

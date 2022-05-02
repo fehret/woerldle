@@ -436,7 +436,7 @@ class _GamePageState extends State<GamePage>
           height: 20.0,
         ),
         Text(
-          AppLocalizations.of(context)!.right,
+          AppLocalizations.of(context)!.correct,
           style: TextStyle(color: Colors.lightGreen, fontSize: 40.0),
         ),
         Container(

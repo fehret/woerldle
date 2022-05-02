@@ -1,5 +1,15 @@
+import 'dart:ui';
+
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
+import 'package:country_codes/country_codes.dart';
+
+Future<String?> countryCode() async {
+  await CountryCodes.init();
+
+  final Locale? deviceLocale = CountryCodes.getDeviceLocale();
+  return deviceLocale?.languageCode;
+}
 
 //------------------------------
 // Datenmodell für ein Land
@@ -28,14 +38,86 @@ class Country {
   factory Country.fromJSON(dynamic json) {
     List coords = List.from(json['latlng']);
 
+    String? acc3;
+
+    acc3Conv() async {
+      acc3 = await countryCode();
+
+      switch(acc3) {
+        case "DE":
+          acc3 = "deu";
+          break;
+        case "CS":
+          acc3 = "ces";
+          break;
+        case "ET":
+          acc3 = "est";
+          break;
+        case "FI":
+          acc3 = "fin";
+          break;
+        case "FR":
+          acc3 = "fra";
+          break;
+        case "HR":
+          acc3 = "hrv";
+          break;
+        case "HU":
+          acc3 = "hun";
+          break;
+        case "IT":
+          acc3 = "ita";
+          break;
+        case "JA":
+          acc3 = "jpn";
+          break;
+        case "KO":
+          acc3 = "kor";
+          break;
+        case "NL":
+          acc3 = "nld";
+          break;
+        case "FA":
+          acc3 = "per";
+          break;
+        case "PL":
+          acc3 = "pol";
+          break;
+        case "PT":
+          acc3 = "por";
+          break;
+        case "RU":
+          acc3 = "rus";
+          break;
+        case "SK":
+          acc3 = "slk";
+          break;
+        case "SV":
+          acc3 = "swe";
+          break;
+        case "ES":
+          acc3 = "spa";
+          break;
+        case "UR":
+          acc3 = "urd";
+          break;
+        case "ZH":
+          acc3 = "zho";
+          break;
+      }
+    }
+    acc3Conv();
+
     return Country(
-      json['name']['common'] as String,
+      json['translations']["deu"]['common'] as String,
       LatLng(coords[0].toDouble(), coords[1].toDouble()),
       json['cca2'].toLowerCase() as String,
       json['area'],
       //mapProjection(LatLng(coords[0].toDouble(), coords[1].toDouble()))
     );
   }
+
+
 
   /*static Coords mapProjection(LatLng mapCoords) {
     double lat = mapCoords.latitude;

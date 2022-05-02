@@ -1,5 +1,4 @@
 {
-  "appTitle": "Wördle",
   "difficulty": "Schwierigkeit",
   "darkMode": "Darkmode",
   "settings": "Einstellungen",
@@ -14,5 +13,5 @@
   "nextRound": "Nächste Runde",
   "anotherRound": "Noch eine Runde!",
   "wrong": "Leider falsch!",
-  "right": "Korrekt!"
+  "correct": "Korrekt!"
 }
