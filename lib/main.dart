@@ -1,4 +1,3 @@
-import 'package:country_codes/country_codes.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ Future<void> main() async {
   runApp(const MyApp());
   String? locale = await Devicelocale.currentLocale;
   locales.locale = locale?.substring(0, 2);
-  print("Sprache: " + locales.locale!);
 }
 
 class MyApp extends StatelessWidget {

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:woerldle/models/country.dart';
@@ -17,7 +19,6 @@ Column guessColumn(
       if (diff < 2) {
         angle = currCountry.mapDirection(countryToGuess.coords);
         distance = currCountry.getDistanceByCountry(countryToGuess);
-        print("angle: $angle");
         dir = (((angle - (1 / 16) * pi) / (pi / 4)).abs()).round();
         //dir = 0;
       } else {

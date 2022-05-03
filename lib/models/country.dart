@@ -1,8 +1,7 @@
-import 'dart:ui';
+// ignore_for_file: non_constant_identifier_names
 
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
-import 'package:country_codes/country_codes.dart';
 import '../variablen/locale.dart' as locales;
 
 //------------------------------
@@ -297,7 +296,7 @@ class Country {
       //print(acc3);
     }
     acc3Conv();
-    print(locales.locale);
+    //print(locales.locale);
 
     Country land;
 

@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 import 'dart:math';
 
@@ -11,7 +13,6 @@ import 'package:woerldle/pages/countryPopup.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
@@ -19,7 +20,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../widgets/smallImage.dart';
 
 // Lokalisierung
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 const int SMALL_COUNTRIES = 10000;
@@ -75,10 +75,10 @@ class _GamePageState extends State<GamePage>
   // App-weite Einstellungen
   //  Asynchronität beachten
   //------------------------------
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  //final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   checkPrefValue(key) async {
-    print("game: darkMode: $darkMode, difficulty: $difficulty");
+    //print("game: darkMode: $darkMode, difficulty: $difficulty");
     switch (key) {
       case "difficulty":
         int d = await SharedPreferences.getInstance().then((prefs) {
