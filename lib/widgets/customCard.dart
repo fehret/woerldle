@@ -16,12 +16,12 @@ Card customCard(Country currCountry,
         borderRadius: BorderRadius.circular(15.0),
       ),
       leading: SizedBox(
-        width: 60,
+        width: 55,
         child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           arrow,
           Container(
               margin: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-              width: 30,
+              //width: 25,
               child: Text(
                 direction,
               ))
@@ -29,7 +29,13 @@ Card customCard(Country currCountry,
       ),
       title: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
         smallImage(currCountry, color: disColor, width: 30, type: "borders"),
-        Text(currCountry.name, style: TextStyle(color: disColor)),
+        Flexible(
+          child: Text(
+            currCountry.name, 
+            style: TextStyle(color: disColor),
+            overflow: TextOverflow.ellipsis
+          )
+        )
       ]),
       trailing: Container(
         width: 70,
