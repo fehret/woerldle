@@ -127,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage>
   Widget getBackLayer(BuildContext context) => BackdropNavigationBackLayer(
             items: [
             Card(
-              color: Colors.white,
+              color: darkMode ? Colors.grey : Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20)
@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage>
                       leading: const Icon(Icons.gamepad_outlined),
                       title: Text(AppLocalizations.of(context)!.game),
                     ),
-                    const Divider(color: Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
+                    Divider(color: darkMode ? Colors.white : Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
                     ListTile(
                 leading: const Icon(Icons.check),
                 title: Text(AppLocalizations.of(context)!.achievements),
@@ -155,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage>
               child: Text(AppLocalizations.of(context)!.settings),
             ),
             Card(
-              color: Colors.white,
+              color: darkMode ? Colors.grey : Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20)
@@ -182,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage>
                           })
                       )
                     ),
-                    const Divider(color: Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
+                    Divider(color: darkMode ? Colors.white : Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
                     ListTile(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                       leading: const Icon(Icons.videogame_asset),
@@ -195,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage>
                         padding:
                             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: darkMode ? Colors.grey : Colors.white,
                             borderRadius: BorderRadius.circular(10)),
                         child: DropdownButton<String>(
                           value: difficulty.toString(),
