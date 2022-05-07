@@ -2,6 +2,7 @@ import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woerldle/pages/achievements.dart';
 import 'package:woerldle/pages/game.dart';
@@ -16,8 +17,25 @@ Future<void> main() async {
   locales.locale = locale?.substring(0, 2);
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+
+  static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void changeTheme(ThemeMode themeMode) {
+    print(themeMode == ThemeMode.dark);
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
 
   // This widget is the root of your application.
   @override
@@ -27,9 +45,11 @@ class MyApp extends StatelessWidget {
     ]);
 
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
+      theme:
+          ThemeData(primarySwatch: Colors.green, brightness: Brightness.light),
+      darkTheme: ThemeData(brightness: Brightness.dark),
+      themeMode: _themeMode,
+
       // Is needed for generation of localisation files
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -65,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage>
   int _pageIndex = 0;
   int difficulty = 1;
   bool darkMode = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void toggleDarkMode(value) async {}
 
@@ -87,11 +108,12 @@ class _MyHomePageState extends State<MyHomePage>
             difficulty = int.parse(value);
           });
         }
-
         break;
       case "darkMode":
+        var brightness = SchedulerBinding.instance!.window.platformBrightness;
+        bool isDarkMode = brightness == Brightness.dark;
         final prefs = await SharedPreferences.getInstance();
-        bool readDarkMode = prefs.getBool('darkMode') ?? false;
+        bool readDarkMode = prefs.getBool('darkMode') ?? isDarkMode;
         prefs.setBool('darkMode', !readDarkMode);
         setState(() {
           darkMode = !readDarkMode;
@@ -99,6 +121,21 @@ class _MyHomePageState extends State<MyHomePage>
         break;
       default:
     }
+  }
+
+  getDarkMode() async {
+    var brightness = SchedulerBinding.instance!.window.platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
+    final prefs = await SharedPreferences.getInstance();
+    bool correctMode = prefs.getBool('darkMode') ?? isDarkMode;
+
+    MyApp.of(context)!
+        .changeTheme(correctMode ? ThemeMode.dark : ThemeMode.light);
+
+    setState(() {
+      darkMode = correctMode;
+    });
   }
 
   pageWrapper(pageNumber) {
@@ -116,131 +153,149 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
     getPrefDiff();
+    getDarkMode();
   }
 
   //--------------------------------------------------
   // Funktion gibt Backlayer als Widget zurück
   // Änderung bzgl. Design müssen hier getätigt werden
   //--------------------------------------------------
-  Widget getBackLayer(BuildContext context) => BackdropNavigationBackLayer(
-            items: [
-            Card(
-              color: darkMode ? Colors.grey : Colors.white,
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)
-              ),
-              elevation: 10,
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget> [
-                    ListTile(
-                      leading: const Icon(Icons.gamepad_outlined),
-                      title: Text(AppLocalizations.of(context)!.game),
-                    ),
-                    Divider(color: darkMode ? Colors.white : Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
-                    ListTile(
-                leading: const Icon(Icons.check),
-                title: Text(AppLocalizations.of(context)!.achievements),
+  Widget getBackLayer() => Builder(
+        builder: (BuildContext context) {
+          return BackdropNavigationBackLayer(
+              items: [
+                Card(
+                  color: darkMode ? Colors.grey : Colors.white,
+                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  elevation: 10,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(children: <Widget>[
+                      ListTile(
+                        leading: const Icon(Icons.gamepad_outlined),
+                        title: Text(AppLocalizations.of(context)!.game),
+                        onTap: () {
+                          Backdrop.of(context).concealBackLayer();
+                          setState(() {
+                            _pageIndex = 0;
+                          });
+                        },
+                      ),
+                      Divider(
+                          color: darkMode ? Colors.white : Colors.black,
+                          thickness: 0.1,
+                          indent: 10,
+                          endIndent: 10),
+                      ListTile(
+                        leading: const Icon(Icons.check),
+                        title: Text(AppLocalizations.of(context)!.achievements),
+                        onTap: () {
+                          Backdrop.of(context).concealBackLayer();
+                          setState(() {
+                            _pageIndex = 1;
+                          });
+                        },
+                      ),
+                    ]),
                   ),
-                ]
                 ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(AppLocalizations.of(context)!.settings),
-            ),
-            Card(
-              color: darkMode ? Colors.grey : Colors.white,
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)
-              ),
-              elevation: 10,
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget> [
-                    ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                      //minVerticalPadding: 10,
-                      leading: const Icon(Icons.dark_mode),
-                      title: Text(
-                        AppLocalizations.of(context)!.darkMode,
-                        textAlign: TextAlign.left,
-                        ),
-                      trailing: SizedBox(
-                        width: 100,
-                        child: CupertinoSwitch(
-                          value: darkMode,
-                          onChanged: (newValue) {
-                            setPref("darkMode", newValue);
-                          })
-                      )
-                    ),
-                    Divider(color: darkMode ? Colors.white : Colors.black, thickness: 0.1, indent: 10, endIndent: 10),
-                    ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                      leading: const Icon(Icons.videogame_asset),
-                      title: Text(
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(AppLocalizations.of(context)!.settings),
+                ),
+                Card(
+                  color: darkMode ? Colors.grey : Colors.white,
+                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  elevation: 10,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(children: <Widget>[
+                      ListTile(
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 10),
+                          //minVerticalPadding: 10,
+                          leading: const Icon(Icons.dark_mode),
+                          title: Text(
+                            AppLocalizations.of(context)!.darkMode,
+                            textAlign: TextAlign.left,
+                          ),
+                          trailing: SizedBox(
+                              width: 100,
+                              child: CupertinoSwitch(
+                                  value: darkMode,
+                                  onChanged: (newValue) {
+                                    MyApp.of(context)!.changeTheme(newValue
+                                        ? ThemeMode.dark
+                                        : ThemeMode.light);
+                                    setPref("darkMode", newValue);
+                                  }))),
+                      Divider(
+                          color: darkMode ? Colors.white : Colors.black,
+                          thickness: 0.1,
+                          indent: 10,
+                          endIndent: 10),
+                      ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 10),
+                        leading: const Icon(Icons.videogame_asset),
+                        title: Text(
                           AppLocalizations.of(context)!.difficulty,
                           textAlign: TextAlign.left,
-                      ),
-                      trailing: Container(
-                        width: 100,
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                            color: darkMode ? Colors.grey : Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: DropdownButton<String>(
-                          value: difficulty.toString(),
-                          style: const TextStyle(color: Colors.deepPurple),
-                          onChanged: (String? newValue) {
-                            setPref("difficulty", newValue!);
-                          },
-                          items: [
-                            [1, Icons.sentiment_very_satisfied_sharp],
-                            [2, Icons.sentiment_satisfied],
-                            [3, Icons.sentiment_very_dissatisfied_outlined]
-                          ].map<DropdownMenuItem<String>>((List list) {
-                            return DropdownMenuItem<String>(
-                                value: list[0].toString(),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        list[0].toString(),
-                                        style: const TextStyle(
-                                            color: Colors.deepPurple, fontSize: 20),
-                                      ),
-                                      Icon(list[1]),
-                                    ]));
-                          }).toList(),
-                          icon: const Icon(Icons.arrow_drop_down),
-                          iconSize: 42,
-                          underline: const SizedBox(),
+                        ),
+                        trailing: Container(
+                          width: 100,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                              color: darkMode ? Colors.grey : Colors.white,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: DropdownButton<String>(
+                            value: difficulty.toString(),
+                            style: const TextStyle(color: Colors.deepPurple),
+                            onChanged: (String? newValue) {
+                              setPref("difficulty", newValue!);
+                            },
+                            items: [
+                              [1, Icons.sentiment_very_satisfied_sharp],
+                              [2, Icons.sentiment_satisfied],
+                              [3, Icons.sentiment_very_dissatisfied_outlined]
+                            ].map<DropdownMenuItem<String>>((List list) {
+                              return DropdownMenuItem<String>(
+                                  value: list[0].toString(),
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          list[0].toString(),
+                                          style: const TextStyle(
+                                              color: Colors.deepPurple,
+                                              fontSize: 20),
+                                        ),
+                                        Icon(list[1]),
+                                      ]));
+                            }).toList(),
+                            icon: const Icon(Icons.arrow_drop_down),
+                            iconSize: 42,
+                            underline: const SizedBox(),
+                          ),
                         ),
                       ),
-                    ),
-                  ]
+                    ]),
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
               //---------------------------------
               // setzt dementsprechend den Index
               //---------------------------------
               itemPadding: const EdgeInsets.only(bottom: 500.0),
-              onTap: (int pos) {
-                setState(() {
-                  _pageIndex = pos;
-                });
-              },
               separatorBuilder: (context, position) => const Divider());
+        },
+      );
 
   //Grundstruktur der Applikation
   //Auf der Seiten werden alle Seiten geladen
@@ -248,6 +303,7 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     super.build(context);
     return BackdropScaffold(
+      scaffoldKey: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: BackdropAppBar(
         title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -275,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage>
       //----------------------------------
       // Backlayer wird prozedural erzeugt
       //----------------------------------
-      backLayer: getBackLayer(context),
+      backLayer: getBackLayer(),
     );
   }
 }
