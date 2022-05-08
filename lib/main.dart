@@ -1,5 +1,6 @@
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,7 +32,9 @@ class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.system;
 
   void changeTheme(ThemeMode themeMode) {
-    print(themeMode == ThemeMode.dark);
+    if (kDebugMode) {
+      print(themeMode == ThemeMode.dark);
+    }
     setState(() {
       _themeMode = themeMode;
     });
