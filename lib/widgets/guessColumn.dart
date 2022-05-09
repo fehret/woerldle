@@ -27,7 +27,7 @@ Column guessColumn(
         dir = (((angle - (1 / 16) * pi) / (pi / 4)).abs()).round();
       }
 
-      direction = ["N", "NE", "E", "SE","S", "SW", "W", "NW", "N"][dir];
+      direction = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"][dir];
 
       Widget arrow = Transform.rotate(
         angle: angle,
