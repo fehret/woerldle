@@ -11,4 +11,5 @@ Weitere auf dem gleichen Prinzip basierende Spielmodi können bei überschüssig
 Das Spiel und der dazugehörige Code wird unter der MIT-Lizenz verteilt.
 
 Die countries.json, countries.geojson und die combined.json werden under der ODbL verteilt.
+
 Die entsprechenden Copyrighttexte sind in der LICENSE.md zu finden
