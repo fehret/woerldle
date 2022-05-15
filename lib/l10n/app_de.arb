@@ -4,7 +4,7 @@
   "settings": "Einstellungen",
   "achievements": "Errungenschaften",
   "game": "Spiel",
-  "whichCountry": "Welches Land wird dargestellt?",
+  "whichCountry": "Welches Land/Gebiet wird dargestellt?",
   "country": "Land",
   "pleaseChooseCountry": "Bitte wähle ein Land",
   "pleaseChooseAnother": "Bitte wähle ein noch nicht gewähltes Land",
@@ -13,5 +13,18 @@
   "nextRound": "Nächste Runde",
   "anotherRound": "Noch eine Runde!",
   "wrong": "Leider falsch!",
-  "correct": "Korrekt!"
+  "correct": "Korrekt!",
+  "statistics": "Statistiken: ",
+  "won": "Gew.:",
+  "lost": "Verl.:",
+  "avgGuess": "Durch. Versuche:",
+  "winLooseDaily": "Hier sehen Sie Ihre Gewinn-/Verluststatistik nach Wochentag aufgeschlüsselt.",
+  "dailyPlays": "Hier sehen Sie Ihre Anzahl an gespielten Spielen nach Wochentag.",
+  "monday": "M",
+  "tuesday": "D",
+  "wednesday": "M",
+  "thursday": "D",
+  "friday": "F",
+  "saturday": "S",
+  "sunday": "S"
 }

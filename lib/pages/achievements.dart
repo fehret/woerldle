@@ -6,6 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class AchievementsPage extends StatefulWidget {
   const AchievementsPage({Key? key}) : super(key: key);
 
@@ -16,7 +19,7 @@ class AchievementsPage extends StatefulWidget {
 class _AchievementsPageState extends State<AchievementsPage> {
   late final Future<SharedPreferences> preferenceInstance;
 
-  final weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  //final weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   @override
   void initState() {
@@ -26,6 +29,14 @@ class _AchievementsPageState extends State<AchievementsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final weekdays = [AppLocalizations.of(context)!.monday,
+      AppLocalizations.of(context)!.tuesday,
+      AppLocalizations.of(context)!.wednesday,
+      AppLocalizations.of(context)!.thursday,
+      AppLocalizations.of(context)!.friday,
+      AppLocalizations.of(context)!.saturday,
+      AppLocalizations.of(context)!.sunday
+    ];
     return Center(
         child: Column(
       mainAxisSize: MainAxisSize.max,
@@ -89,22 +100,22 @@ class _AchievementsPageState extends State<AchievementsPage> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.all(12.0),
-                              child: Text("Overall statistics: ",
+                              child: Text(AppLocalizations.of(context)!.statistics ,
                                   style:
                                       TextStyle(fontWeight: FontWeight.w600)),
                             ),
                             Text(
-                              "Won: ${prefs.getInt("wins") ?? 0}",
+                              AppLocalizations.of(context)!.won + " ${prefs.getInt("wins") ?? 0}",
                               style: const TextStyle(color: Colors.green),
                             ),
                             Text(
-                              "Lost: ${prefs.getInt("lose") ?? 0}",
+                            AppLocalizations.of(context)!.lost + " ${prefs.getInt("lose") ?? 0}",
                               style: const TextStyle(color: Colors.red),
                             ),
                             Text(
-                              "Avg. Guesses: $avgGuess",
+                              AppLocalizations.of(context)!.avgGuess + " $avgGuess",
                               style: const TextStyle(color: Colors.purple),
                             )
                           ]),
@@ -189,10 +200,10 @@ class _AchievementsPageState extends State<AchievementsPage> {
                                     }).toList()
                                   : [BarChartGroupData(x: 0)])),
                         ),
-                        const SizedBox(
+                        SizedBox(
                           width: 150,
                           child: Text(
-                            "Hier sehen Sie Ihre Gewinn-/Verluststatistik nach Wochentag aufgeschlüsselt.",
+                            AppLocalizations.of(context)!.winLooseDaily,
                             overflow: TextOverflow.clip,
                             maxLines: 10,
                           ),
@@ -203,10 +214,10 @@ class _AchievementsPageState extends State<AchievementsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        const SizedBox(
+                        SizedBox(
                           width: 150,
                           child: Text(
-                            "Hier sehen Sie Ihre Anzahl an gespielten Spielen nach Wochentag.",
+                            AppLocalizations.of(context)!.dailyPlays,
                             overflow: TextOverflow.clip,
                             maxLines: 10,
                           ),

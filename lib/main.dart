@@ -61,8 +61,9 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
+        Locale('en', ''),
         Locale('de', ''), // Deutsch ohne Landesspezifizierung
-        Locale('en', ''), // Englisch ohne Landesspezifizierung
+        Locale('pt', ''),
       ],
       //home: MyHomePage(title: AppLocalizations.of(context)!.appTitle),
       home: const MyHomePage(title: "Wörldle"),
